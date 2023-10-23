@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 function Home() {
     return (
-        <div className="flex flex-col items-center justify-center h-screen mx-4 sm:mx-0">
+        <div className="bg-myColor1 min-h-screen w-screen flex flex-col items-center justify-center p-4">
             <div className="mb-1 text-2xl sm:text-xl md:text-2xl">
                 <p className="text-white font-semibold">QR Bharat</p>
             </div>
