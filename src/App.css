@@ -1,0 +1,33 @@
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+    .flex p:nth-child(2) {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .flex p:nth-child(3) {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .flex>a {
+        flex-basis: 100%;
+        margin-top: 1rem;
+    }
+
+    .flex .flex-row {
+        justify-content: space-between;
+    }
+
+    .flex .flex-row p {
+        font-size: 14px;
+    }
+}

@@ -9,6 +9,7 @@ import MyMenu from "./pages/admin/dashboard/MyMenu";
 import PreviewMenu from "./pages/admin/dashboard/PreviewMenu";
 import DesignQR from "./pages/admin/dashboard/DesignQR";
 import Navbar from "./components/Navbar";
+import EditMenu from "./pages/admin/dashboard/EditMenu";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="signup" element={<Signup />} />
         <Route path="dashboard" element={<Layout><Dashboard /></Layout>} />
         <Route path="my-menu" element={<Layout><MyMenu /></Layout>} />
+        <Route path="edit-menu" element={<Layout><EditMenu /></Layout>} />
         <Route path="preview-menu" element={<Layout><PreviewMenu /></Layout>} />
         <Route path="design-qr" element={<Layout><DesignQR /></Layout>} />
       </Routes>
