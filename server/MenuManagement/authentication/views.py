@@ -46,3 +46,19 @@ class UserDetailsView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh_token')
+
+        if not refresh_token:
+            return Response({'detail': 'Refresh token is required for logout.'}, status=status.HTTP_BAD_REQUEST)
+
+        try:
+            RefreshToken(refresh_token).blacklist()
+            return Response({'detail': 'Logout Successful'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'detail': 'Invalid refresh token or unable to blacklist.'}, status=status.HTTP_BAD_REQUEST)

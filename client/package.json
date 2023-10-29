@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@heroicons/react": "v1",
+    "axios": "^1.6.0",
     "framer-motion": "^10.16.4",
     "init": "^0.1.2",
     "ionicons": "^7.2.1",

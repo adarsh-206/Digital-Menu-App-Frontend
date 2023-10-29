@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Signup() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         businessName: '',
+        email: '',
         gstIN: '',
         contactNo: '',
         registration: '',
@@ -21,37 +23,50 @@ function Signup() {
         setErrors({ ...errors, [name]: '' });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const newErrors = {};
+    const isValidate = () => {
+        const errors = {};
 
-        if (!formData.businessName) {
-            newErrors.businessName = 'Business Name is required';
-        }
-        if (!formData.gstIN) {
-            newErrors.gstIN = 'GST IN is required';
-        }
-        if (!formData.contactNo) {
-            newErrors.contactNo = 'Contact No is required';
-        }
-        if (!formData.registration) {
-            newErrors.registration = 'Registration Date is required';
-        }
-        if (!formData.speciality) {
-            newErrors.speciality = 'Speciality is required';
-        }
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(formData.email)) {
+            errors.email = 'Invalid email address';
         }
         if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
+            errors.password = 'Passwords do not match';
         }
 
-        if (Object.keys(newErrors).length === 0) {
-            setIsSubmitted(true);
-            navigate('/dashboard');
+        return errors;
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const formErrors = isValidate();
+
+        if (Object.keys(formErrors).length === 0) {
+            const userData = {
+                business_name: formData.businessName,
+                email: formData.email,
+                gst_no: formData.gstIN,
+                contact_no: formData.contactNo,
+                registration_date: formData.registration,
+                speciality: formData.speciality,
+                password: formData.password,
+            };
+
+            // const baseUrl = process.env.REACT_APP_API_BASE_URL ;
+            const baseUrl = "https://tensormenuapp.onrender.com";
+            const endpoint = '/api/user/signup';
+
+            axios.post(baseUrl + endpoint, userData)
+                .then((response) => {
+                    setIsSubmitted(true);
+                    navigate('/dashboard');
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         } else {
-            setErrors(newErrors);
+            setErrors(formErrors);
         }
     };
 
@@ -72,9 +87,22 @@ function Signup() {
                                 name="businessName"
                                 value={formData.businessName}
                                 onChange={handleInputChange}
+                                required
                             />
-                            {errors.businessName && (
-                                <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>
+                        </div>
+                        <div className="mb-2">
+                            <label className="block text-white text-sm font-medium" htmlFor="email">Email Address</label>
+                            <input
+                                className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                            />
+                            {errors.email && (
+                                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                             )}
                         </div>
                         <div className="mb-2">
@@ -86,10 +114,8 @@ function Signup() {
                                 name="gstIN"
                                 value={formData.gstIN}
                                 onChange={handleInputChange}
+                                required
                             />
-                            {errors.gstIN && (
-                                <p className="text-red-500 text-xs mt-1">{errors.gstIN}</p>
-                            )}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="contactNo">Contact No</label>
@@ -100,10 +126,8 @@ function Signup() {
                                 name="contactNo"
                                 value={formData.contactNo}
                                 onChange={handleInputChange}
+                                required
                             />
-                            {errors.contactNo && (
-                                <p className="text-red-500 text-xs mt-1">{errors.contactNo}</p>
-                            )}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="registration">Registration Date</label>
@@ -114,10 +138,8 @@ function Signup() {
                                 name="registration"
                                 value={formData.registration}
                                 onChange={handleInputChange}
+                                required
                             />
-                            {errors.registration && (
-                                <p className="text-red-500 text-xs mt-1">{errors.registration}</p>
-                            )}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="speciality">Speciality</label>
@@ -128,10 +150,8 @@ function Signup() {
                                 name="speciality"
                                 value={formData.speciality}
                                 onChange={handleInputChange}
+                                required
                             />
-                            {errors.speciality && (
-                                <p className="text-red-500 text-xs mt-1">{errors.speciality}</p>
-                            )}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="password">Password</label>
@@ -142,10 +162,8 @@ function Signup() {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleInputChange}
+                                required
                             />
-                            {errors.password && (
-                                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-                            )}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="confirmPassword">Confirm Password</label>
@@ -156,6 +174,7 @@ function Signup() {
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleInputChange}
+                                required
                             />
                             {errors.confirmPassword && (
                                 <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
