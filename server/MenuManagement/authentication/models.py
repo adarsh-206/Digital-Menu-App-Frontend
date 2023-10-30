@@ -32,7 +32,8 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     business_name = models.CharField(max_length=50)
-    email = models.EmailField(unique=True, default="default@example.com")
+    email = models.EmailField(
+        unique=True, default="default@example.com")
     gst_no = models.CharField(max_length=15)
     contact_no = models.CharField(max_length=15)
     registration_date = models.DateField()
