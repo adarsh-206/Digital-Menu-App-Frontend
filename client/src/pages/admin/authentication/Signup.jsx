@@ -55,7 +55,7 @@ function Signup() {
 
             // const baseUrl = process.env.REACT_APP_API_BASE_URL ;
             const baseUrl = "https://tensormenuapp.onrender.com";
-            const endpoint = '/api/user/signup';
+            const endpoint = '/api/user/register/';
 
             axios.post(baseUrl + endpoint, userData)
                 .then((response) => {
