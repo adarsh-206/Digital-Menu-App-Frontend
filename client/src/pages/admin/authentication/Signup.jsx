@@ -46,13 +46,13 @@ function Signup() {
             const userData = {
                 mobile_number: formData.mobileNumber,
                 email: formData.email,
-                gstIN: formData.gstIN,
-                user_id: formData.userId,
+                gst_no: formData.gstIN,
+                user_name: formData.userId,
                 password: formData.password,
             };
 
             const baseUrl = "https://tensormenuapp.onrender.com";
-            const endpoint = '/api/user/register/';
+            const endpoint = '/api/user/register';
 
             axios.post(baseUrl + endpoint, userData)
                 .then((response) => {
