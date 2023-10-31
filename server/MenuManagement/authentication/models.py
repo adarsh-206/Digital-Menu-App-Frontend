@@ -17,6 +17,9 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, username, password):
+        return self.create_user(username, password, is_staff=True, is_superuser=True)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     mobile_number = models.CharField(unique=True)
