@@ -5,20 +5,19 @@ from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, mobile_number, email, gst_no, user_name, password=None, **extra_fields):
+    def create_user(self, mobile_number, email, gst_no, user_name, password=None):
         user = self.model(
             mobile_number=mobile_number,
             gst_no=gst_no,
             user_name=user_name,
             email=self.normalize_email(email),
-            **extra_fields
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, password):
-        return self.create_user(username, password, is_staff=True, is_superuser=True)
+    def create_superuser(self, mobile_number, email, gst_no, user_name, password):
+        return self.create_user(mobile_number, email, gst_no, user_name, password)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -31,7 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'mobile_number'
-    REQUIRED_FIELDS = ['user_name', 'gst_no']
+    REQUIRED_FIELDS = ['user_name', 'gst_no', 'email']
 
     def __str__(self):
         return self.mobile_number
