@@ -5,14 +5,11 @@ import axios from 'axios';
 function Signup() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        businessName: '',
+        mobileNumber: '',
         email: '',
         gstIN: '',
-        contactNo: '',
-        registration: '',
-        speciality: '',
+        userId: '',
         password: '',
-        confirmPassword: '',
     });
     const [errors, setErrors] = useState({});
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -27,16 +24,19 @@ function Signup() {
         const errors = {};
 
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const mobilePattern = /^\d{10}$/;
 
-        if (!emailPattern.test(formData.email)) {
+        if (formData.email && !emailPattern.test(formData.email)) {
             errors.email = 'Invalid email address';
         }
-        if (formData.password !== formData.confirmPassword) {
-            errors.password = 'Passwords do not match';
+
+        if (!mobilePattern.test(formData.mobileNumber)) {
+            errors.mobileNumber = 'Invalid mobile number';
         }
 
         return errors;
     };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -44,16 +44,13 @@ function Signup() {
 
         if (Object.keys(formErrors).length === 0) {
             const userData = {
-                business_name: formData.businessName,
+                mobile_number: formData.mobileNumber,
                 email: formData.email,
-                gst_no: formData.gstIN,
-                contact_no: formData.contactNo,
-                registration_date: formData.registration,
-                speciality: formData.speciality,
+                gstIN: formData.gstIN,
+                user_id: formData.userId,
                 password: formData.password,
             };
 
-            // const baseUrl = process.env.REACT_APP_API_BASE_URL ;
             const baseUrl = "https://tensormenuapp.onrender.com";
             const endpoint = '/api/user/register/';
 
@@ -79,19 +76,22 @@ function Signup() {
                     </div>
                     <form className="w-64 max-w-screen-xl lg:w-96" onSubmit={handleSubmit}>
                         <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="businessName">Business Name</label>
+                            <label className="block text-white text-sm font-medium" htmlFor="mobileNumber">Mobile Number</label>
                             <input
                                 className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
                                 type="text"
-                                id="businessName"
-                                name="businessName"
-                                value={formData.businessName}
+                                id="mobileNumber"
+                                name="mobileNumber"
+                                value={formData.mobileNumber}
                                 onChange={handleInputChange}
                                 required
                             />
+                            {errors.mobileNumber && (
+                                <p className="text-red-500 text-xs mt-1">{errors.mobileNumber}</p>
+                            )}
                         </div>
                         <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="email">Email Address</label>
+                            <label className="block text-white text-sm font-medium" htmlFor="email">Email Address (Optional)</label>
                             <input
                                 className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
                                 type="email"
@@ -99,7 +99,6 @@ function Signup() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                required
                             />
                             {errors.email && (
                                 <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -118,37 +117,13 @@ function Signup() {
                             />
                         </div>
                         <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="contactNo">Contact No</label>
+                            <label className="block text-white text-sm font-medium" htmlFor="userId">User ID</label>
                             <input
                                 className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
                                 type="text"
-                                id="contactNo"
-                                name="contactNo"
-                                value={formData.contactNo}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                        <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="registration">Registration Date</label>
-                            <input
-                                className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
-                                type="text"
-                                id="registration"
-                                name="registration"
-                                value={formData.registration}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                        <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="speciality">Speciality</label>
-                            <input
-                                className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus-border-white"
-                                type="text"
-                                id="speciality"
-                                name="speciality"
-                                value={formData.speciality}
+                                id="userId"
+                                name="userId"
+                                value={formData.userId}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -164,21 +139,6 @@ function Signup() {
                                 onChange={handleInputChange}
                                 required
                             />
-                        </div>
-                        <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="confirmPassword">Confirm Password</label>
-                            <input
-                                className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
-                                type="password"
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            {errors.confirmPassword && (
-                                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
-                            )}
                         </div>
                         <div className="flex justify-center mt-3">
                             <button className="py-2 px-4 rounded-md bg-myColor3 hover:bg-myColor2b text-white text-sm">

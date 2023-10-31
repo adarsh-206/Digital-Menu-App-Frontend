@@ -1,48 +1,39 @@
-# models.py
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from oauth2_provider.models import AbstractApplication
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, business_name, gst_no, contact_no, registration_date, speciality, password, confirm_password):
-        if not business_name:
-            raise ValueError('The Business Name must be required')
-        if not gst_no:
-            raise ValueError('The GST No must be required')
-        if not contact_no:
-            raise ValueError('The Contact No must be required')
-        if not registration_date:
-            raise ValueError('The Registration Date must be required')
-        if not speciality:
-            raise ValueError('The Speciality must be required')
-        if password != confirm_password:
-            raise ValueError('Passwords do not match')
-
+    def create_user(self, mobile_number, email, gst_no, user_name, password=None, **extra_fields):
         user = self.model(
-            business_name=business_name,
+            mobile_number=mobile_number,
             gst_no=gst_no,
-            contact_no=contact_no,
-            registration_date=registration_date,
-            speciality=speciality,
+            user_name=user_name,
+            email=self.normalize_email(email),
+            **extra_fields
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
 
-class User(AbstractBaseUser):
-    business_name = models.CharField(max_length=50)
-    email = models.EmailField(
-        unique=True, default="default@example.com")
-    gst_no = models.CharField(max_length=15)
-    contact_no = models.CharField(max_length=15)
-    registration_date = models.DateField()
-    speciality = models.CharField(max_length=100)
-    last_login = models.DateTimeField(blank=True, null=True)
+class User(AbstractBaseUser, PermissionsMixin):
+    mobile_number = models.CharField(unique=True)
+    email = models.EmailField(blank=True)
+    gst_no = models.CharField()
+    user_name = models.CharField()
+    last_login = models.DateTimeField(default=timezone.now)
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'mobile_number'
+    REQUIRED_FIELDS = ['user_name', 'gst_no']
 
     def __str__(self):
-        return self.business_name
+        return self.mobile_number
+
+
+class Application(AbstractApplication):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True)
