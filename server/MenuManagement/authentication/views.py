@@ -52,23 +52,24 @@ class UserRegistrationView(APIView):
 class UserLoginView(APIView):
     def post(self, request):
         data = request.data
-        email_or_username = data.get('email_or_username')
+        email_or_mobile_number = data.get('email_or_mobile_number')
         password = data.get('password')
 
         # Check if the provided login field is an email or a username
-        if '@' in email_or_username:
-            user = User.objects.filter(email=email_or_username).first()
+        if '@' in email_or_mobile_number:
+            user = User.objects.filter(email=email_or_mobile_number).first()
         else:
-            user = User.objects.filter(user_name=email_or_username).first()
+            user = User.objects.filter(
+                mobile_number=email_or_mobile_number).first()
 
         if user is None or not user.check_password(password):
-            return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response('Invalid credentials', status=status.HTTP_401_UNAUTHORIZED)
 
         # Find the OAuth2 Application for the user
         application = Application.objects.filter(user=user).first()
 
         if not application:
-            return Response({'detail': 'OAuth2 Application not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('OAuth2 Application not found', status=status.HTTP_400_BAD_REQUEST)
 
         # Revoke existing access and refresh tokens for the user
         AccessToken.objects.filter(user=user).delete()
