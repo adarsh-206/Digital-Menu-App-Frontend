@@ -36,7 +36,7 @@ const Navbar = () => {
                 'Authorization': `Bearer ${token}`,
             };
 
-            const baseUrl = "http://127.0.0.1:8000";
+            const baseUrl = import.meta.env.VITE_BASE_URL;
             const endpoint = '/api/user/logout';
 
             axios.post(baseUrl + endpoint, null, { headers })
