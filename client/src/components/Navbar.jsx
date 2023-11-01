@@ -4,12 +4,15 @@ import { FaCircleUser } from "react-icons/fa6";
 import { GrUserSettings, GrSettingsOption } from "react-icons/gr";
 import { IoLogInOutline } from "react-icons/io5";
 import { useMediaQuery } from "react-responsive";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Navbar = () => {
     const isSmallScreen = useMediaQuery({ maxWidth: 768 });
     const [showNotifications, setShowNotifications] = useState(false);
     const [showUserProfile, setShowUserProfile] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
     const toggleNotifications = () => {
         setShowNotifications(!showNotifications);
@@ -24,6 +27,28 @@ const Navbar = () => {
             setShowNotifications(false);
         }
     };
+
+    const handleLogOut = () => {
+        const token = localStorage.getItem('access_token');
+
+        if (token) {
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+            };
+
+            const baseUrl = "http://127.0.0.1:8000";
+            const endpoint = '/api/user/logout';
+
+            axios.post(baseUrl + endpoint, null, { headers })
+                .then((response) => {
+                    localStorage.removeItem('access_token');
+                    navigate('/login');
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+    }
 
     useEffect(() => {
         const closeDropdowns = (e) => {
@@ -63,7 +88,7 @@ const Navbar = () => {
                                     <GrSettingsOption size={16} />
                                     <span>Settings</span>
                                 </p>
-                                <p className="hover:bg-slate-200 p-2 flex items-center gap-2" onClick={toggleUserProfile}>
+                                <p className="hover:bg-slate-200 p-2 flex items-center gap-2" onClick={handleLogOut}>
                                     <IoLogInOutline size={16} />
                                     <span>Logout</span>
                                 </p>
@@ -90,7 +115,7 @@ const Navbar = () => {
                                     <GrSettingsOption size={16} />
                                     <span>Settings</span>
                                 </p>
-                                <p className="hover:bg-slate-200 p-2 flex items-center gap-2" onClick={toggleUserProfile}>
+                                <p className="hover:bg-slate-200 p-2 flex items-center gap-2" onClick={handleLogOut}>
                                     <IoLogInOutline size={16} />
                                     <span>Logout</span>
                                 </p>

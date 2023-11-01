@@ -8,11 +8,11 @@ import Layout from './components/sidebar/Layout';
 import MyMenu from "./pages/admin/dashboard/MyMenu";
 import PreviewMenu from "./pages/admin/dashboard/PreviewMenu";
 import DesignQR from "./pages/admin/dashboard/DesignQR";
-import Navbar from "./components/Navbar";
 import EditMenu from "./pages/admin/dashboard/EditMenu";
 import Menu from "./pages/user/Menu";
 
 function App() {
+
   return (
     <Router>
       <Routes>

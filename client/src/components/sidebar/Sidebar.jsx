@@ -8,7 +8,6 @@ import { AiOutlineAntDesign } from 'react-icons/ai';
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
-import Navbar from "../Navbar";
 
 const Sidebar = ({ children }) => {
     const isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });

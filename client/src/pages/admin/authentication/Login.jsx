@@ -1,40 +1,43 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        email: '',
+        email_or_mobile_number: '',
         password: '',
     });
-    const [errors, setErrors] = useState({});
+    const [apiErrors, setApiErrors] = useState();
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: '' });
     };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const newErrors = {};
 
-        if (!formData.email) {
-            newErrors.email = 'Email is required';
-        }
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        }
+        const userData = {
+            email_or_mobile_number: formData.email_or_mobile_number,
+            password: formData.password,
+        };
 
-        if (Object.keys(newErrors).length === 0) {
-            setIsSubmitted(true);
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const endpoint = '/api/user/login';
 
-            // Assuming a successful login would navigate to the dashboard
-            navigate('/dashboard');
-        } else {
-            setErrors(newErrors);
-        }
+        axios.post(baseUrl + endpoint, userData)
+            .then((response) => {
+                localStorage.setItem('access_token', response.data.access_token)
+                setIsSubmitted(true);
+                navigate('/dashboard');
+            })
+            .catch((error) => {
+                console.log(error.response.data);
+                setApiErrors(error.response.data)
+            });
     };
 
     return (
@@ -46,18 +49,15 @@ function Login() {
                     </div>
                     <form className="w-64 max-w-screen-xl lg:w-96" onSubmit={handleSubmit}>
                         <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="email">Email</label>
+                            <label className="block text-white text-sm font-medium" htmlFor="user_name">Mobile Number/Email</label>
                             <input
                                 className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
+                                type="text"
+                                id="email_or_mobile_number"
+                                name="email_or_mobile_number"
+                                value={formData.email_or_mobile_number}
                                 onChange={handleInputChange}
                             />
-                            {errors.email && (
-                                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-                            )}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="password">Password</label>
@@ -69,10 +69,10 @@ function Login() {
                                 value={formData.password}
                                 onChange={handleInputChange}
                             />
-                            {errors.password && (
-                                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-                            )}
                         </div>
+                        {apiErrors && (
+                            <p className="text-red-400 text-xs mt-1">{apiErrors ? apiErrors : ''}</p>
+                        )}
                         <div className="flex justify-center mt-4">
                             <button className="py-2 px-4 rounded-md bg-myColor3 hover:bg-myColor2b text-white text-sm">
                                 Login
