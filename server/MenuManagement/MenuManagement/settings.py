@@ -1,4 +1,5 @@
 # setting.py
+import os
 import dj_database_url
 import environ
 from pathlib import Path
@@ -26,6 +27,11 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
+    'restaurants.apps.RestaurantsConfig',
+    'menus.apps.MenusConfig',
+    'items.apps.ItemsConfig',
+    'categories.apps.CategoriesConfig',
+    'media',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'oauth2_provider',
-    'rest_framework',
+    'rest_framework'
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -51,6 +57,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'MenuManagement.urls'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 TEMPLATES = [
     {
@@ -74,20 +83,20 @@ WSGI_APPLICATION = 'MenuManagement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "MenuManagement",
-#         "USER": "postgres",
-#         "PASSWORD": "admin",
-#         "HOST": "localhost",
-#         "PORT": "5432",
-#     }
-# }
-
 DATABASES = {
-    "default": dj_database_url.parse(env('DATABASE_URL'))
+    'default': {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "MenuManagement",
+        "USER": "postgres",
+        "PASSWORD": "admin",
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
 }
+
+# DATABASES = {
+#     "default": dj_database_url.parse(env('DATABASE_URL'))
+# }
 
 # REST FRAMEWORK
 
@@ -102,6 +111,7 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     )
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

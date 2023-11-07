@@ -19,31 +19,23 @@ class UserSerializer(serializers.ModelSerializer):
         })
     email = serializers.EmailField(required=False, allow_blank=True)
     # State + PAN-based 15-characters
-    gst_no = serializers.CharField(min_length=15, max_length=15, required=True,
-                                   error_messages={
-                                       'required': 'GST Number is required.',
-                                       'blank': 'GST Number is required.',
-                                       'min_length': 'Enter valid GST number.',
-                                       'max_length': 'Enter valid GST number.',
-                                   })
 
     class Meta:
         model = User
-        fields = ('mobile_number', 'email', 'gst_no', 'password')
+        fields = ('id', 'mobile_number', 'email', 'password')
 
     def validate_fields(self, validated_data):
+        mobile_number = validated_data.get('mobile_number')
+        email = validated_data.get('email')
 
-        if User.objects.filter(mobile_number=validated_data['mobile_number']).exists():
+        if User.objects.filter(mobile_number=mobile_number).exists():
             raise serializers.ValidationError(
                 {"mobile_number": ["Mobile number is already in use."]})
 
-        if User.objects.filter(email=validated_data['email']).exists():
-            raise serializers.ValidationError(
-                {"email": ["Email is already in use."]})
-
-        if User.objects.filter(gst_no=validated_data['gst_no']).exists():
-            raise serializers.ValidationError(
-                {"gst_no": ["GST no is already in use."]})
+        if email and email != "":
+            if User.objects.filter(email=email).exists():
+                raise serializers.ValidationError(
+                    {"email": ["Email is already in use."]})
 
     def create(self, validated_data):
         self.validate_fields(validated_data)
