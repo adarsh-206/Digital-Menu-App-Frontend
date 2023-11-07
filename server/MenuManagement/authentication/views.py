@@ -9,6 +9,8 @@ from .models import User
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 import uuid
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from restaurants.models import Restaurant
 
 
 class UserRegistrationView(APIView):
@@ -33,7 +35,8 @@ class UserRegistrationView(APIView):
             user=user,
             application=application,
             token=str(uuid.uuid4()),
-            expires=timezone.now() + timedelta(minutes=20)
+            expires=timezone.now() + timedelta(minutes=20),
+            scope='read write'
         )
         refresh_token = RefreshToken.objects.create(
             user=user,
@@ -80,7 +83,8 @@ class UserLoginView(APIView):
             user=user,
             application=application,
             token=str(uuid.uuid4()),
-            expires=timezone.now() + timedelta(minutes=20)
+            expires=timezone.now() + timedelta(minutes=20),
+            scope='read write'
         )
         refresh_token = RefreshToken.objects.create(
             user=user,
@@ -97,7 +101,7 @@ class UserLoginView(APIView):
 
 
 class UserDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, TokenHasReadWriteScope]
 
     def get(self, request):
         user = request.user
@@ -105,7 +109,7 @@ class UserDetailsView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, TokenHasReadWriteScope]
 
     def post(self, request):
         # Get the user's access token
@@ -113,5 +117,14 @@ class LogoutView(APIView):
         access_token = AccessToken.objects.get(user=user)
 
         # Revoke the access token (logout)
-        access_token.revoke()
+        access_token.delete()
         return Response({'detail': 'User logged out'}, status=status.HTTP_200_OK)
+
+
+class UserHasRestaurantView(APIView):
+    def get(self, request):
+        user = request.user
+        has_restaurant = Restaurant.objects.filter(
+            user_restaurant=user).exists()
+
+        return Response({'has_restaurant': has_restaurant}, status=status.HTTP_200_OK)

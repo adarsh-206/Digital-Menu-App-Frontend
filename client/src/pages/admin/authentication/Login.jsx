@@ -16,8 +16,7 @@ function Login() {
         setFormData({ ...formData, [name]: value });
     };
 
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const userData = {
@@ -26,18 +25,34 @@ function Login() {
         };
 
         const baseUrl = import.meta.env.VITE_BASE_URL;
-        const endpoint = '/api/user/login';
+        const loginEndpoint = '/api/user/login';
 
-        axios.post(baseUrl + endpoint, userData)
-            .then((response) => {
-                localStorage.setItem('access_token', response.data.access_token)
-                setIsSubmitted(true);
-                navigate('/dashboard');
-            })
-            .catch((error) => {
-                console.log(error.response.data);
-                setApiErrors(error.response.data)
+        try {
+            const response = await axios.post(baseUrl + loginEndpoint, userData);
+
+            // Save the access token to local storage
+            localStorage.setItem('access_token', response.data.access_token);
+
+            // Check if the user is registered with a restaurant
+            const checkRegistrationResponse = await axios.get(baseUrl + '/api/restaurants/check-restaurant-registration', {
+                headers: {
+                    'Authorization': `Bearer ${response.data.access_token}`,
+                },
             });
+
+            // Navigate based on the registration status
+            if (checkRegistrationResponse.data.registered === true) {
+                navigate('/dashboard');
+            } else {
+                navigate('/register-restauarant');
+            }
+        } catch (error) {
+            if (error.response && error.response.data) {
+                console.log(error.response.data);
+            } else {
+                console.log("An error occurred:", error);
+            }
+        }
     };
 
     return (
@@ -49,7 +64,7 @@ function Login() {
                     </div>
                     <form className="w-64 max-w-screen-xl lg:w-96" onSubmit={handleSubmit}>
                         <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="user_name">Mobile Number/Email</label>
+                            <label className="block text-white text-sm font-medium" htmlFor="email_or_mobile_number">Mobile Number/Email</label>
                             <input
                                 className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
                                 type="text"

@@ -10,6 +10,7 @@ import PreviewMenu from "./pages/admin/dashboard/PreviewMenu";
 import DesignQR from "./pages/admin/dashboard/DesignQR";
 import EditMenu from "./pages/admin/dashboard/EditMenu";
 import Menu from "./pages/user/Menu";
+import RegisterRestaurant from "./pages/admin/restaurant-registration/RegisterRestaurant";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="register-restauarant" element={<RegisterRestaurant />} />
         <Route path="dashboard" element={<Layout><Dashboard /></Layout>} />
         <Route path="my-menu" element={<Layout><MyMenu /></Layout>} />
         <Route path="edit-menu" element={<Layout><EditMenu /></Layout>} />

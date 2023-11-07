@@ -1,11 +1,16 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from authentication.views import UserRegistrationView, UserLoginView, UserDetailsView, LogoutView
 
 urlpatterns = [
     path('admin', admin.site.urls),
-    path('api/user/register', UserRegistrationView.as_view(), name='user-register'),
-    path('api/user/login', UserLoginView.as_view(), name='user-register'),
-    path('api/user/details', UserDetailsView.as_view(), name='user-details'),
-    path('api/user/logout', LogoutView.as_view(), name='logout'),
+    path('api/', include('authentication.urls')),
+    path('api/', include('restaurants.urls')),
+    path('api/', include('categories.urls')),
+    path('api/', include('items.urls'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

@@ -26,19 +26,21 @@ function Signup() {
 
         const userData = {
             mobile_number: formData.mobileNumber,
-            email: formData.email,
+            email: formData.email.trim() === "" ? null : formData.email,
             gst_no: formData.gstIN,
             password: formData.password,
         };
 
         const baseUrl = import.meta.env.VITE_BASE_URL;
         const endpoint = '/api/user/register';
+        console.log(userData);
 
         axios.post(baseUrl + endpoint, userData)
             .then((response) => {
+
                 localStorage.setItem('access_token', response.data.access_token)
                 setIsSubmitted(true);
-                navigate('/dashboard');
+                navigate('/register-restauarant');
             })
             .catch((error) => {
                 setApiErrors(error.response.data)
