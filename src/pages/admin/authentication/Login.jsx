@@ -34,14 +34,14 @@ function Login() {
             localStorage.setItem('access_token', response.data.access_token);
 
             // Check if the user is registered with a restaurant
-            const checkRegistrationResponse = await axios.get(baseUrl + '/api/restaurants/check-restaurant-registration', {
+            const checkRegistrationResponse = await axios.get(baseUrl + '/api/user/has-restaurant', {
                 headers: {
                     'Authorization': `Bearer ${response.data.access_token}`,
                 },
             });
 
             // Navigate based on the registration status
-            if (checkRegistrationResponse.data.registered === true) {
+            if (checkRegistrationResponse.data.has_restaurant === true) {
                 navigate('/dashboard');
             } else {
                 navigate('/register-restauarant');

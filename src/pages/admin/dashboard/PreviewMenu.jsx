@@ -1,60 +1,63 @@
-import React, { useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
-import { FaDesktop, FaTablet, FaMobile } from 'react-icons/fa';
-import CategorySlider from './previewMenu/CategorySlider';
-import Navbar from './previewMenu/Navbar';
+import React, { useEffect, useState } from 'react';
+import MobileEmulator from '../mobileEmulator/MobileEmulator';
+import Menu from '../../user/Menu';
+import axios from 'axios';
+
 
 function PreviewMenu() {
-    const isSmallScreen = useMediaQuery({ maxWidth: 768 });
-    const isExtraSmallScreen = useMediaQuery({ maxWidth: 480 });
-    const [widthStyle, setWidthStyle] = useState('60vw'); // Initialize width style
+    const [gstNo, setGstNo] = useState();
+    const [menuId, setMenuId] = useState();
 
-    const setWidth = (width) => {
-        setWidthStyle(width);
-    };
+    const getRestaurant = () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const restaurantEndpoint = '/api/user/has-restaurant';
+        const token = localStorage.getItem('access_token');
 
-    // Define styles based on screen size and widthStyle
-    const largeScreenStyle = {
-        backgroundColor: 'white',
-        position: 'absolute',
-        top: '58%',
-        left: '58%',
-        transform: 'translate(-50%, -50%)',
-        height: '75vh',
-        width: widthStyle, // Use widthStyle here
-    };
+        if (token) {
+            axios.get(baseUrl + restaurantEndpoint, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    setGstNo(response.data.restaurant_details.gst_no)
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
 
-    const smallScreenStyle = {
-        backgroundColor: 'white',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'absolute',
-        top: '54%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        height: '84vh',
-        width: '80vw',
-    };
+    const getMenus = () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const menuListEndpoint = '/api/menus';
+        const token = localStorage.getItem('access_token')
+
+        if (token) {
+            axios.get(baseUrl + menuListEndpoint, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    const responseData = response.data || [];
+                    setMenuId(responseData[0].id)
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
+
+    useEffect(() => {
+        getRestaurant()
+        getMenus()
+    }, [])
 
     return (
-        <div className='flex flex-col items-center gap-2.5 p-4'>
-            <div className='space-x-2 flex'>
-                <button onClick={() => setWidth('60vw')} className='bg-blue-500 text-white p-2 rounded flex flex-col items-center'>
-                    <FaDesktop /> <span>Desktop</span>
-                </button>
-                <button onClick={() => setWidth('50vw')} className='bg-blue-500 text-white p-2 rounded flex flex-col items-center'>
-                    <FaTablet /> <span>Tablet</span>
-                </button>
-                <button onClick={() => setWidth('30vw')} className='bg-blue-500 text-white p-2 rounded flex flex-col items-center'>
-                    <FaMobile /> <span>Mobile</span>
-                </button>
-            </div>
-            <div style={isSmallScreen ? smallScreenStyle : largeScreenStyle}>
-                <Navbar />
-                <CategorySlider containerWidth={widthStyle} />
-            </div>
-        </div>
+        <MobileEmulator>
+            <Menu gstNo={gstNo} menuId={menuId} />
+        </MobileEmulator>
     );
 }
 

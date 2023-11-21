@@ -1,0 +1,44 @@
+/* MobileEmulator.css */
+
+.mobile-emulator {
+    position: relative;
+    width: 100%;
+    max-width: 375px;
+    height: 88vh;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    overflow-y: hidden;
+    background-color: white;
+    margin-top: 2vh;
+}
+
+.mobile-emulator-content {
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+.floating-button {
+    position: absolute;
+    bottom: 10%;
+    right: 50%;
+    transform: translate(50%, 50%);
+    background-color: black;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .mobile-emulator {
+        max-width: 368px;
+    }
+
+    .floating-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        transform: translate(0, 0);
+    }
+}

@@ -26,7 +26,7 @@ function App() {
         <Route path="edit-menu" element={<Layout><EditMenu /></Layout>} />
         <Route path="preview-menu" element={<Layout><PreviewMenu /></Layout>} />
         <Route path="design-qr" element={<Layout><DesignQR /></Layout>} />
-        <Route path="user-menu" element={<Menu />} />
+        <Route path="menu/:gst_no/:menu_id" element={<Menu />} />
       </Routes>
     </Router>
   );

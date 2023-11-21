@@ -7,7 +7,6 @@ function Signup() {
     const [formData, setFormData] = useState({
         mobileNumber: '',
         email: '',
-        gstIN: '',
         password: '',
     });
     const [errors, setErrors] = useState({});
@@ -27,13 +26,11 @@ function Signup() {
         const userData = {
             mobile_number: formData.mobileNumber,
             email: formData.email.trim() === "" ? null : formData.email,
-            gst_no: formData.gstIN,
             password: formData.password,
         };
 
         const baseUrl = import.meta.env.VITE_BASE_URL;
         const endpoint = '/api/user/register';
-        console.log(userData);
 
         axios.post(baseUrl + endpoint, userData)
             .then((response) => {
@@ -81,20 +78,6 @@ function Signup() {
                             />
                             {apiErrors.email && (
                                 <p className="text-red-400 text-xs mt-1">{apiErrors.email[0] ? apiErrors.email[0] : ''}</p>
-                            )}
-                        </div>
-                        <div className="mb-2">
-                            <label className="block text-white text-sm font-medium" htmlFor="gstIN">GST IN</label>
-                            <input
-                                className="w-full border-b border-gray-400 py-0.5 text-white bg-transparent focus:outline-none focus:border-white"
-                                type="text"
-                                id="gstIN"
-                                name="gstIN"
-                                value={formData.gstIN}
-                                onChange={handleInputChange}
-                            />
-                            {apiErrors.gst_no && (
-                                <p className="text-red-400 text-xs mt-1">{apiErrors.gst_no[0] ? apiErrors.gst_no[0] : ''}</p>
                             )}
                         </div>
                         <div className="mb-2">

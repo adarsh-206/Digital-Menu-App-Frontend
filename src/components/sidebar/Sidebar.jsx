@@ -114,12 +114,6 @@ const Sidebar = ({ children }) => {
                                 <span className={open ? "block" : "hidden"}>Design QR</span>
                             </Link>
                         </li>
-                        <li className={`py-3 pl-0 pr-0 ${pathname === "/design-qr" ? "bg-slate-200" : ""}`}>
-                            <Link to={"/user-menu"} className="link text-black flex gap-2 px-4">
-                                <AiOutlineAntDesign size={23} className="min-w-max" />
-                                <span className={open ? "block" : "hidden"}>User Menu</span>
-                            </Link>
-                        </li>
                     </ul>
                 </div>
                 <motion.div

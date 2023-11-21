@@ -59,10 +59,10 @@ function RegisterRestaurant() {
             // Prepare restaurant data
             const restaurantData = {
                 user: [userResponse.data.user_id],
-                restaurantName: formData.restaurantName,
-                contactNumber: formData.contactNumber,
-                gstIN: formData.gstIN,
-                fssaiCode: formData.fssaiCode,
+                restaurant_name: formData.restaurantName,
+                contact_number: formData.contactNumber,
+                gst_no: formData.gstIN,
+                fssai_code: formData.fssaiCode,
                 location: formData.location,
                 city: formData.city,
             };

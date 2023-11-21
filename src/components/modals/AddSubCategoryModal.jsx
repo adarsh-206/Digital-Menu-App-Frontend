@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function AddCategoryModal({ closeModal, onAddSuccess }) {
-    const [categoryName, setCategoryName] = useState('');
-    const [categoryId, setCategoryId] = useState();
+function AddSubCategoryModal({ closeModal, onAddSuccess, selectedSubCategoryId }) {
+    const [subCategoryName, setSubCategoryName] = useState('');
 
-    const handleAddCategory = async (e) => {
+    const handleAddSubCategory = async (e) => {
         e.preventDefault();
         try {
             const baseUrl = import.meta.env.VITE_BASE_URL;
             const userRestroEndpoint = `/api/user/has-restaurant`;
-            const addCategoryEndpoint = `/api/categories/`;
+            const addSubCategoryEndpoint = `/api/categories/`;
             const token = localStorage.getItem('access_token');
 
             if (token) {
@@ -22,22 +21,22 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
 
                 const restaurantId = responseUser.data.restaurant_details.id;
 
-                const categoryData = {
+                const subCategoryData = {
                     restaurant: restaurantId,
-                    name: categoryName,
-                    parent_category: null,
+                    name: subCategoryName,
+                    parent_category: selectedSubCategoryId,
                 };
 
-                const responseAddCategory = await axios.post(baseUrl + addCategoryEndpoint, categoryData, {
+                const responseAddSubCategory = await axios.post(baseUrl + addSubCategoryEndpoint, subCategoryData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
 
-                if (responseAddCategory) {
+                if (responseAddSubCategory) {
                     closeModal();
-                    setCategoryId(responseAddCategory.data.id);
-                    onAddSuccess();
+                    setSubCategoryName('');
+                    onAddSuccess()
                 }
             }
         } catch (error) {
@@ -47,19 +46,19 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
 
     return (
         <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4 text-center">Add New Category</h2>
-            <form onSubmit={handleAddCategory}>
+            <h2 className="text-xl font-semibold mb-4 text-center">Add New SubCategory</h2>
+            <form onSubmit={handleAddSubCategory}>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="categoryName">
-                        Category Name:
+                    <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="subCategoryName">
+                        SubCategory Name:
                     </label>
                     <input
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="categoryName"
+                        id="subCategoryName"
                         type="text"
-                        placeholder="Enter category name"
-                        value={categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
+                        placeholder="Enter subcategory name"
+                        value={subCategoryName}
+                        onChange={(e) => setSubCategoryName(e.target.value)}
                     />
                 </div>
                 <div className="flex items-center justify-center gap-3">
@@ -82,4 +81,4 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
     );
 }
 
-export default AddCategoryModal;
+export default AddSubCategoryModal;
