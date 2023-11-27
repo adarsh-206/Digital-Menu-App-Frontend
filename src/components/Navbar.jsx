@@ -90,6 +90,12 @@ const Navbar = () => {
                                         <span className="text-black">My Restaurant</span>
                                     </Link>
                                 </p>
+                                <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
+                                    <Link to="/my-events" className="flex items-center gap-2 text-black">
+                                        <GrSettingsOption size={16} />
+                                        <span className="text-black">My Events</span>
+                                    </Link>
+                                </p>
                                 <p className="hover:bg-slate-200 p-2 flex items-center gap-2" onClick={handleLogOut}>
                                     <IoLogInOutline size={16} />
                                     <span>Logout</span>
@@ -117,6 +123,12 @@ const Navbar = () => {
                                     <Link to="/my-restaurant" className="flex items-center gap-2 text-black">
                                         <GrSettingsOption size={16} />
                                         <span>My Restaurant</span>
+                                    </Link>
+                                </p>
+                                <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
+                                    <Link to="/my-events" className="flex items-center gap-2 text-black">
+                                        <GrSettingsOption size={16} />
+                                        <span>My Events</span>
                                     </Link>
                                 </p>
                                 <p className="hover:bg-slate-200 p-2 flex items-center gap-2" onClick={handleLogOut}>

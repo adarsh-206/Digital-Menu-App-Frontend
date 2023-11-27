@@ -5,9 +5,8 @@ const DaysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Sat
 
 function MyRestaurant() {
     const [restaurantDetails, setRestaurantDetails] = useState({});
-    const [restaurantId, setRestaurantId] = useState()
+    const [restaurantId, setRestaurantId] = useState();
     const [currentStep, setCurrentStep] = useState(1);
-    const [isChecked, setIsChecked] = useState(false);
     const [openingHours, setOpeningHours] = useState({
         Monday: { open: '', close: '' },
         Tuesday: { open: '', close: '' },
@@ -25,10 +24,6 @@ function MyRestaurant() {
         location: '',
         city: '',
     });
-    const [eventData, setEventData] = useState({
-        eventName: '',
-        eventDate: ''
-    })
 
     const getRestaurantDetail = () => {
         const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -103,11 +98,6 @@ function MyRestaurant() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleEventChange = (e) => {
-        const { name, value } = e.target;
-        setEventData({ ...eventData, [name]: value });
-    };
-
     const handleNextStep = () => {
         setCurrentStep(currentStep + 1);
     }
@@ -131,44 +121,8 @@ function MyRestaurant() {
 
         if (currentStep === 1) {
             await updateRestaurantDetails();
-
-            if (isChecked) {
-                await createEvent();
-            }
-
         } else if (currentStep === 2) {
             await setTimings();
-        }
-    };
-
-
-    const handleCheckboxChange = () => {
-        setIsChecked((prev) => !prev);
-    };
-
-    const createEvent = async () => {
-        const baseUrl = import.meta.env.VITE_BASE_URL;
-        const createEventEndpoint = `/api/restaurants/create/`;
-        const token = localStorage.getItem('access_token');
-
-        const eventsData = {
-            restaurant: restaurantId,
-            event_name: eventData.eventName,
-            event_date: eventData.eventDate
-        };
-
-        if (token) {
-            axios.post(baseUrl + createEventEndpoint, eventsData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            })
-                .then(response => {
-
-                })
-                .catch(error => {
-
-                });
         }
     };
 
@@ -178,20 +132,20 @@ function MyRestaurant() {
         const token = localStorage.getItem('access_token');
 
         const restroTimings = {
-            "monday_open": openingHours["Monday"]["open"],
-            "monday_close": openingHours["Monday"]["close"],
-            "tuesday_open": openingHours["Tuesday"]["open"],
-            "tuesday_close": openingHours["Tuesday"]["close"],
-            "wednesday_open": openingHours["Wednesday"]["open"],
-            "wednesday_close": openingHours["Wednesday"]["close"],
-            "thursday_open": openingHours["Thursday"]["open"],
-            "thursday_close": openingHours["Thursday"]["close"],
-            "friday_open": openingHours["Friday"]["open"],
-            "friday_close": openingHours["Friday"]["close"],
-            "saturday_open": openingHours["Saturday"]["open"],
-            "saturday_close": openingHours["Saturday"]["close"],
-            "sunday_open": openingHours["Sunday"]["open"],
-            "sunday_close": openingHours["Sunday"]["close"]
+            "monday_open": openingHours["Monday"]["open"] ? openingHours["Monday"]["open"] : "11:00",
+            "monday_close": openingHours["Monday"]["close"] ? openingHours["Monday"]["close"] : "23:00",
+            "tuesday_open": openingHours["Tuesday"]["open"] ? openingHours["Tuesday"]["open"] : "11:00",
+            "tuesday_close": openingHours["Tuesday"]["close"] ? openingHours["Tuesday"]["close"] : "23:00",
+            "wednesday_open": openingHours["Wednesday"]["open"] ? openingHours["Wednesday"]["open"] : "11:00",
+            "wednesday_close": openingHours["Wednesday"]["close"] ? openingHours["Wednesday"]["close"] : "23:00",
+            "thursday_open": openingHours["Thursday"]["open"] ? openingHours["Thursday"]["open"] : "11:00",
+            "thursday_close": openingHours["Thursday"]["close"] ? openingHours["Thursday"]["close"] : "23:00",
+            "friday_open": openingHours["Friday"]["open"] ? openingHours["Friday"]["open"] : "11:00",
+            "friday_close": openingHours["Friday"]["close"] ? openingHours["Friday"]["close"] : "23:00",
+            "saturday_open": openingHours["Saturday"]["open"] ? openingHours["Saturday"]["open"] : "11:00",
+            "saturday_close": openingHours["Saturday"]["close"] ? openingHours["Saturday"]["close"] : "23:00",
+            "sunday_open": openingHours["Sunday"]["open"] ? openingHours["Sunday"]["open"] : "11:00",
+            "sunday_close": openingHours["Sunday"]["close"] ? openingHours["Sunday"]["close"] : "23:00"
         };
 
         if (token) {
@@ -223,7 +177,6 @@ function MyRestaurant() {
                 .then(response => {
                     const responseData = response.data || {}
                     const formatTime = (time) => time ? time.slice(0, 5) : '';
-                    console.log("timess", formatTime(responseData.thursday_open));
                     setOpeningHours({
                         Monday: {
                             open: formatTime(responseData.monday_open),
@@ -264,7 +217,7 @@ function MyRestaurant() {
     useEffect(() => {
         getRestaurantDetail()
         getTimings()
-    }, [])
+    }, []);
 
     return (
         <div className='w-[50%] m-3 p-4 flex flex-col justify-center items-center h-[80vh] mx-auto'>
@@ -316,28 +269,6 @@ function MyRestaurant() {
                                 <input name='location' className="appearance-none block w-full bg-gray-50 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="location" type="text" placeholder="123, Laurence Street" value={formData.location} onChange={handleInputChange} />
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 mb-6">
-                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold" htmlFor="additionalField2">
-                                Do you want to show any upcoming event?
-                            </label>
-                            <input type='checkbox' className='' id="checkbox" checked={isChecked} onChange={handleCheckboxChange} />
-                        </div>
-                        {isChecked && (
-                            <div className="flex flex-wrap -mx-3 mb-6">
-                                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                    <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="eventName">
-                                        Event Name
-                                    </label>
-                                    <input name='eventName' className="appearance-none block w-full bg-gray-50 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="eventName" type="text" placeholder="Sunday Special" value={eventData.eventName} onChange={handleEventChange} />
-                                </div>
-                                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                    <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="eventDate">
-                                        Event Date
-                                    </label>
-                                    <input name="eventDate" className="appearance-none block w-full bg-gray-50 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="eventDate" type="date" value={eventData.eventDate} onChange={handleEventChange} />
-                                </div>
-                            </div>
-                        )}
                         <div className='flex justify-center gap-4'>
                             <button type='submit' className='bg-[#940B92] text-white p-2 rounded-lg cursor-pointer'>
                                 Save Changes

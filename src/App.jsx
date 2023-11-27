@@ -11,7 +11,8 @@ import DesignQR from "./pages/admin/dashboard/DesignQR";
 import EditMenu from "./pages/admin/dashboard/EditMenu";
 import Menu from "./pages/user/Menu";
 import RegisterRestaurant from "./pages/admin/restaurant-registration/RegisterRestaurant";
-import MyRestaurant from './pages/admin/restaurant-info/MyRestaurant'
+import MyRestaurant from './pages/admin/restaurant-info/MyRestaurant';
+import MyEvents from "./pages/admin/restaurant-info/MyEvents";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="preview-menu" element={<Layout><PreviewMenu /></Layout>} />
         <Route path="design-qr" element={<Layout><DesignQR /></Layout>} />
         <Route path="my-restaurant" element={<Layout><MyRestaurant /></Layout>} />
+        <Route path="my-events" element={<Layout><MyEvents /></Layout>} />
         <Route path="menu/:gst_no/:menu_id" element={<Menu />} />
       </Routes>
     </Router>

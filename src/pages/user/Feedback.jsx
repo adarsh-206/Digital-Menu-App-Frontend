@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import angry from '../../assets/angry.png';
 import bad from '../../assets/bad.png';
 import average from '../../assets/average.png';
 import good from '../../assets/good.png';
 import loved from '../../assets/loved.png';
+import axios from 'axios';
 
 const Feedback = ({ onClose }) => {
     const [rating, setRating] = useState(null);
     const [feedbackType, setFeedbackType] = useState('');
     const [additionalComments, setAdditionalComments] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
+    const [restaurantId, setRestaurantId] = useState()
 
     const handleRatingClick = (selectedRating) => {
         setRating(selectedRating);
@@ -28,12 +30,52 @@ const Feedback = ({ onClose }) => {
         });
     };
 
-    const handleSubmit = () => {
-        console.log('Heyyy');
-        console.log('Rating:', rating);
-        console.log('Feedback Type:', feedbackType);
-        console.log('Additional Comments:', additionalComments);
+    const getRestaurantDetail = () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const restaurantEndpoint = '/api/user/has-restaurant';
+        const token = localStorage.getItem('access_token');
+
+        if (token) {
+            axios.get(baseUrl + restaurantEndpoint, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    const responseData = response.data || [];
+                    if (responseData.has_restaurant) {
+                        setRestaurantId(responseData.restaurant_details.id);
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
+
+    const handleSubmit = async () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const feedbackEndpoint = `/api/restaurants/feedbacks/`;
+
+        const feedbackData = {
+            restaurant: restaurantId,
+            ratings: rating,
+            feedback_type: feedbackType,
+            additional_comments: additionalComments
+        };
+
+        axios.post(baseUrl + feedbackEndpoint, feedbackData)
+            .then(response => {
+
+            })
+            .catch(error => {
+
+            });
     };
+
+    useEffect(() => {
+        getRestaurantDetail()
+    }, [])
 
     return (
         <div className="absolute top-0 right-0 w-full bg-white shadow-lg z-50">
