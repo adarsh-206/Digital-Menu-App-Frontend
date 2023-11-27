@@ -3,7 +3,7 @@ import { AiOutlineEye } from 'react-icons/ai';
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 
-const UserCards = ({ menu }) => {
+const UserCards = ({ menu, description }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [open, setOpen] = useState(false);
@@ -17,10 +17,11 @@ const UserCards = ({ menu }) => {
 
     return (
         <>
+            <p className='text-xs py-1'>{description}</p>
             {
                 menu.map((item, index) => (
                     <div key={index}>
-                        <p className='px-0 pt-1 text-sm'>{item.name}</p>
+                        <p className='px-0 pt-1 text-sm font-semibold'>{item.name}</p>
                         <div className="flex flex-wrap justify-center">
                             {Array.isArray(item.items) && item.items.length !== 0 ? (
                                 item.items.map((item, itemIndex) => (

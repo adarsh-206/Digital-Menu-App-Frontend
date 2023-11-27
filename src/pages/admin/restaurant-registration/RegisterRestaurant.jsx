@@ -95,7 +95,7 @@ function RegisterRestaurant() {
                     </div>
                     <form className="w-64 max-w-screen-xl lg:w-96" onSubmit={handleSubmit}>
                         <div className="mb-2">
-                            <label className="block text-slate-700 text-sm font-medium" htmlFor="businessName">Restaurant Name</label>
+                            <label className="block text-slate-700 text-sm font-medium" htmlFor="restaurantName">Restaurant Name</label>
                             <input
                                 className="w-full border-b border-gray-400 py-1.5 text-slate-400 text-xs bg-transparent focus:outline-none focus:border-black"
                                 type="text"

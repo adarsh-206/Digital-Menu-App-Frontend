@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function AddCategoryModal({ closeModal, onAddSuccess }) {
     const [categoryName, setCategoryName] = useState('');
+    const [categoryDescription, setCategoryDescription] = useState('');
     const [categoryId, setCategoryId] = useState();
 
     const handleAddCategory = async (e) => {
@@ -25,6 +26,7 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
                 const categoryData = {
                     restaurant: restaurantId,
                     name: categoryName,
+                    description: categoryDescription,
                     parent_category: null,
                 };
 
@@ -62,6 +64,18 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
                         onChange={(e) => setCategoryName(e.target.value)}
                     />
                 </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="categoryDescription">
+                        Category Description:
+                    </label>
+                    <textarea
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="categoryDescription"
+                        placeholder="Enter category description"
+                        value={categoryDescription}
+                        onChange={(e) => setCategoryDescription(e.target.value)}
+                    />
+                </div>
                 <div className="flex items-center justify-center gap-3">
                     <button
                         type="submit"
@@ -78,7 +92,7 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
                     </button>
                 </div>
             </form>
-        </div >
+        </div>
     );
 }
 

@@ -7,6 +7,7 @@ import UserCards from './cards/UserCards';
 import axios from 'axios';
 import Feedback from './Feedback';
 import { useParams } from 'react-router-dom';
+import Slider from "@mui/material/Slider";
 
 function Menu({ gstNo, menuId }) {
     const [categories, setCategories] = useState([]);
@@ -20,6 +21,9 @@ function Menu({ gstNo, menuId }) {
     const [isFilterDropdownOpen, setFilterDropdownOpen] = useState(false);
     const [isVegChecked, setVegChecked] = useState(false);
     const [isNonVegChecked, setNonVegChecked] = useState(false);
+    const [range, setRange] = useState([0, 2000]);
+    const [minPrice, setMinPrice] = useState(range[0]);
+    const [maxPrice, setMaxPrice] = useState(range[1]);
     const { gst_no, menu_id } = useParams();
 
     const openFeedback = () => {
@@ -60,7 +64,7 @@ function Menu({ gstNo, menuId }) {
         if (searchQuery) {
             itemsEndpoint = `/api/filtered-items/?gst_no=${gst_no ? gst_no : gstNo}&menu_id=${menu_id ? menu_id : menuId}&q=${searchQuery}`;
         } else {
-            itemsEndpoint = `/api/sorted-items/?gst_no=${gst_no ? gst_no : gstNo}&menu_id=${menu_id ? menu_id : menuId}&is_veg=${isVegChecked}&is_non_veg=${isNonVegChecked}`;
+            itemsEndpoint = `/api/sorted-items/?gst_no=${gst_no ? gst_no : gstNo}&menu_id=${menu_id ? menu_id : menuId}&is_veg=${isVegChecked}&is_non_veg=${isNonVegChecked}&min_price=${minPrice}&max_price=${maxPrice}`;
         }
 
         axios
@@ -87,7 +91,7 @@ function Menu({ gstNo, menuId }) {
 
     useEffect(() => {
         getItems();
-    }, [gstNo, menuId, searchQuery, isVegChecked, isNonVegChecked]);
+    }, [gstNo, menuId, searchQuery, isVegChecked, isNonVegChecked, minPrice, maxPrice]);
 
     const toggleSearch = () => {
         setSearchOpen((prevSearchOpen) => !prevSearchOpen);
@@ -98,6 +102,13 @@ function Menu({ gstNo, menuId }) {
         getItems();
         setSearchOpen((prevSearchOpen) => !prevSearchOpen);
     }
+
+    const handleChanges = (event, newRange) => {
+        setRange(newRange);
+        setMinPrice(newRange[0]);
+        setMaxPrice(newRange[1]);
+    };
+
 
     return (
         <div className="flex min-h-screen relative">
@@ -135,28 +146,37 @@ function Menu({ gstNo, menuId }) {
                     )}
                 </div>
                 {isFilterDropdownOpen && (
-                    <div className="absolute top-25 right-0 m-2 z-50 bg-white text-sm border border-gray-300 p-2 rounded-md filter-dropdown">
+                    <div className="absolute top-25 right-0 m-2 z-50 bg-white text-sm border border-gray-300 p-2 rounded-md filter-dropdown h-40 w-48">
                         <div>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    value="veg"
-                                    checked={isVegChecked}
-                                    onChange={() => setVegChecked(!isVegChecked)}
-                                />
-                                <span className='ml-2'>Veg</span>
-                            </label>
+                            <p className="font-semibold mb-2">Sort By:</p>
+                            <div className='m-2'>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        value="veg"
+                                        checked={isVegChecked}
+                                        onChange={() => setVegChecked(!isVegChecked)}
+                                    />
+                                    <span className='ml-2'>Veg</span>
+                                </label>
+                            </div>
+                            <div className='m-2'>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        value="nonVeg"
+                                        checked={isNonVegChecked}
+                                        onChange={() => setNonVegChecked(!isNonVegChecked)}
+                                    />
+                                    <span className='ml-2'>Non-Veg</span>
+                                </label>
+                            </div>
                         </div>
-                        <div className='mt-2'>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    value="nonVeg"
-                                    checked={isNonVegChecked}
-                                    onChange={() => setNonVegChecked(!isNonVegChecked)}
-                                />
-                                <span className='ml-2'>Non-Veg</span>
-                            </label>
+                        <div className="mt-2">
+                            <p className="font-semibold mb-2">Price Range:</p>
+                            <div className='m-2'>
+                                <Slider value={range} min={0} max={2000} onChange={handleChanges} valueLabelDisplay="auto" sx={{ color: '#610C9F' }} />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -198,7 +218,7 @@ function Menu({ gstNo, menuId }) {
                                     aria-labelledby={`menu-button-${category.id}`}
                                     tabIndex="-1"
                                 >
-                                    <UserCards menu={category.subcategories} />
+                                    <UserCards menu={category.subcategories} description={category.description} />
                                 </div>
                             )}
                         </div>
