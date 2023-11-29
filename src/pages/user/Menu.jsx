@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MySidebar from './sidebar/Sidebar';
+import UserSidebar from './sidebar/UserSidebar';
 import { MdEdit } from 'react-icons/md';
 import { AiOutlineSearch, AiOutlineInstagram } from 'react-icons/ai';
 import { TfiFilter } from 'react-icons/tfi';
@@ -24,7 +24,18 @@ function Menu({ gstNo, menuId }) {
     const [range, setRange] = useState([0, 2000]);
     const [minPrice, setMinPrice] = useState(range[0]);
     const [maxPrice, setMaxPrice] = useState(range[1]);
+    const [eventData, setEventData] = useState([]);
     const { gst_no, menu_id } = useParams();
+    const [restaurantDetails, setRestaurantDetails] = useState();
+    const [openingHours, setOpeningHours] = useState({
+        Monday: { open: '', close: '' },
+        Tuesday: { open: '', close: '' },
+        Wednesday: { open: '', close: '' },
+        Thursday: { open: '', close: '' },
+        Friday: { open: '', close: '' },
+        Saturday: { open: '', close: '' },
+        Sunday: { open: '', close: '' },
+    });
 
     const openFeedback = () => {
         setFeedbackOpen(true);
@@ -49,6 +60,83 @@ function Menu({ gstNo, menuId }) {
             setMenuOpen(false);
             setFilterDropdownOpen(false);
         }
+    };
+
+    const getRestaurantDetail = () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const restaurantEndpoint = `/api/restaurants/details/${gst_no ? gst_no : gstNo}`;
+
+        axios.get(baseUrl + restaurantEndpoint)
+            .then(response => {
+                const responseData = response.data || [];
+                setRestaurantDetails(responseData);
+                console.log(responseData);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    const getTimings = async () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const createEventEndpoint = `/api/restaurants/opening-hours/${gst_no ? gst_no : gstNo}`;
+
+        axios.get(baseUrl + createEventEndpoint)
+            .then(response => {
+                const responseData = response.data[0] || {}
+                const formatTime = (time) => time ? time.slice(0, 5) : '';
+                const convertTo12HourFormat = (time) => {
+                    const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+                    return new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', options);
+                };
+                setOpeningHours({
+                    Monday: {
+                        open: convertTo12HourFormat(formatTime(responseData.monday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.monday_close)),
+                    },
+                    Tuesday: {
+                        open: convertTo12HourFormat(formatTime(responseData.tuesday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.tuesday_close)),
+                    },
+                    Wednesday: {
+                        open: convertTo12HourFormat(formatTime(responseData.wednesday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.wednesday_close)),
+                    },
+                    Thursday: {
+                        open: convertTo12HourFormat(formatTime(responseData.thursday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.thursday_close)),
+                    },
+                    Friday: {
+                        open: convertTo12HourFormat(formatTime(responseData.friday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.friday_close)),
+                    },
+                    Saturday: {
+                        open: convertTo12HourFormat(formatTime(responseData.saturday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.saturday_close)),
+                    },
+                    Sunday: {
+                        open: convertTo12HourFormat(formatTime(responseData.sunday_open)),
+                        close: convertTo12HourFormat(formatTime(responseData.sunday_close)),
+                    },
+                });
+            })
+            .catch(error => {
+
+            });
+    };
+
+    const getEvents = async () => {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const getEventEndpoint = `/api/restaurants/events/${gst_no ? gst_no : gstNo}`;
+
+        axios.get(baseUrl + getEventEndpoint)
+            .then(response => {
+                const responseData = response.data || {};
+                setEventData(responseData);
+            })
+            .catch(error => {
+
+            });
     };
 
     const handleInputChange = (e) => {
@@ -87,6 +175,9 @@ function Menu({ gstNo, menuId }) {
 
     useEffect(() => {
         getItems();
+        getEvents();
+        getTimings();
+        getRestaurantDetail();
     }, []);
 
     useEffect(() => {
@@ -112,7 +203,7 @@ function Menu({ gstNo, menuId }) {
 
     return (
         <div className="flex min-h-screen relative">
-            <MySidebar />
+            <UserSidebar eventData={eventData} openingHours={openingHours} restaurantDetails={restaurantDetails ? restaurantDetails : ''} />
             <div className="absolute top-0 right-0 p-4">
                 <button onClick={openFeedback} className="bg-black text-white text-sm px-3 py-1.5 rounded-xl">
                     <span className="flex items-center gap-1">
