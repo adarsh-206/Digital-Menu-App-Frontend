@@ -156,41 +156,46 @@ function DesignQR() {
                     <div className='mt-[3rem]'>
                         <div className="text-center">
                             <div className="flex justify-center">
-                                <QRCodeGenerator
-                                    url={url}
-                                    ref={qrCodeGeneratorRef}
-                                    backgroundColor={selectedColor}
-                                    dotColor={selectedDotColor}
-                                    imageDots={isChecked}
-                                    imageSize={imageSize}
-                                    imageMargin={imageMargin}
-                                    image={fileUrl}
-                                    width={qrWidth}
-                                    height={qrHeight}
-                                    dotType={selectedDotType}
-                                    cornerDotType={selectedCornerDotType}
-                                    dotCornerColor={selectedCornerDotColor}
-                                    cornerSquareType={selectedCornerSquareType}
-                                    dotSquareColor={selectedCornerSquareColor}
-                                    errorCorrectionLevel={errorLevel}
-                                    margin={qrMargin}
-                                    backgroundColorType={colorType}
-                                    backgroundColor1={backgroundColor1}
-                                    backgroundColor2={backgroundColor2}
-                                    className="mx-auto"
-                                />
-                            </div>
-                            <div className="mt-5 mb-5 max-w-[300px] mx-auto">
-                                <div className="flex items-center justify-center gap-4 p-2 border border-gray-400 rounded-md">
-                                    <p className="text-center text-gray-500 text-xs max-w-[270px] overflow-hidden overflow-ellipsis">{url}</p>
-                                    <button
-                                        className={`text-${isCopied ? 'green' : 'blue'}-500 hover:text-${isCopied ? 'green' : 'blue'}-700`}
-                                        onClick={copyToClipboard}
-                                    >
-                                        <MdContentCopy size={19} />
-                                    </button>
+                                <div className='bg-white p-5 md:w-[33%] w-full rounded-lg shadow-lg'>
+                                    <QRCodeGenerator
+                                        url={url}
+                                        ref={qrCodeGeneratorRef}
+                                        backgroundColor={selectedColor}
+                                        dotColor={selectedDotColor}
+                                        imageDots={isChecked}
+                                        imageSize={imageSize}
+                                        imageMargin={imageMargin}
+                                        image={fileUrl}
+                                        width={qrWidth}
+                                        height={qrHeight}
+                                        dotType={selectedDotType}
+                                        cornerDotType={selectedCornerDotType}
+                                        dotCornerColor={selectedCornerDotColor}
+                                        cornerSquareType={selectedCornerSquareType}
+                                        dotSquareColor={selectedCornerSquareColor}
+                                        errorCorrectionLevel={errorLevel}
+                                        margin={qrMargin}
+                                        backgroundColorType={colorType}
+                                        backgroundColor1={backgroundColor1}
+                                        backgroundColor2={backgroundColor2}
+                                        className="mx-auto"
+                                    />
+                                    <div className="mt-5 mx-auto">
+                                        <div className="flex flex-col md:flex-row items-center justify-center gap-4 p-2 border border-gray-400 rounded-md">
+                                            <p className="text-center text-gray-500 text-xs md:max-w-[270px] overflow-hidden overflow-ellipsis">
+                                                {url}
+                                            </p>
+                                            <button
+                                                className={`text-${isCopied ? 'green' : 'blue'}-500 hover:text-${isCopied ? 'green' : 'blue'}-700`}
+                                                onClick={copyToClipboard}
+                                            >
+                                                <MdContentCopy size={19} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                         <div className="flex flex-col md:flex-row">
                             <div className="flex-shrink-0 w-full md:w-1/2">

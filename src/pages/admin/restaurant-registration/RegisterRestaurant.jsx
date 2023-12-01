@@ -12,6 +12,14 @@ function RegisterRestaurant() {
         location: '',
         city: '',
     });
+    const [formErrors, setFormErrors] = useState({
+        restaurantName: '',
+        contactNumber: '',
+        gstIN: '',
+        fssaiCode: '',
+        location: '',
+        city: '',
+    });
     const [apiErrors, setApiErrors] = useState({});
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [userDetails, setUserDetails] = useState();
@@ -40,45 +48,105 @@ function RegisterRestaurant() {
             });
     };
 
+    const validateForm = () => {
+        let isValid = true;
+        const newFormErrors = { ...formErrors };
+
+        if (formData.restaurantName.trim() === '') {
+            newFormErrors.restaurantName = 'Please enter restaurant name';
+            isValid = false;
+        } else {
+            newFormErrors.restaurantName = '';
+            isValid = true;
+        }
+
+        if (formData.contactNumber.trim() === '') {
+            newFormErrors.contactNumber = 'Please enter a contact number.';
+            isValid = false;
+        } else {
+            const contactNumberRegex = /^\d{10}$/;
+            if (!contactNumberRegex.test(formData.contactNumber)) {
+                newFormErrors.contactNumber = 'Please enter a valid 10 digit contact number.';
+                isValid = false;
+            } else {
+                newFormErrors.contactNumber = '';
+            }
+        }
+
+        if (formData.gstIN.trim() === '') {
+            newFormErrors.gstIN = 'Please enter gst number.';
+            isValid = false;
+        } else {
+            newFormErrors.gstIN = '';
+            isValid = true;
+        }
+
+        if (formData.fssaiCode.trim() === '') {
+            newFormErrors.fssaiCode = 'Please enter fssai code.';
+            isValid = false;
+        } else {
+            newFormErrors.fssaiCode = '';
+            isValid = true;
+        }
+
+        if (formData.location.trim() === '') {
+            newFormErrors.location = 'Please enter location.';
+            isValid = false;
+        } else {
+            newFormErrors.location = '';
+            isValid = true;
+        }
+
+        if (formData.city.trim() === '') {
+            newFormErrors.city = 'Please enter city.';
+            isValid = false;
+        } else {
+            newFormErrors.city = '';
+            isValid = true;
+        }
+
+        setFormErrors(newFormErrors);
+        return isValid;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const accessToken = localStorage.getItem('access_token');
-            const baseUrl = import.meta.env.VITE_BASE_URL;
-            const userDetailsEndpoint = '/api/user/details';
-            const restaurantEndpoint = '/api/restaurants/register';
+        if (validateForm()) {
+            try {
+                const accessToken = localStorage.getItem('access_token');
+                const baseUrl = import.meta.env.VITE_BASE_URL;
+                const userDetailsEndpoint = '/api/user/details';
+                const restaurantEndpoint = '/api/restaurants/register';
 
-            // Get user details
-            const userResponse = await axios.get(baseUrl + userDetailsEndpoint, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
+                const userResponse = await axios.get(baseUrl + userDetailsEndpoint, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
 
-            // Prepare restaurant data
-            const restaurantData = {
-                user: [userResponse.data.user_id],
-                restaurant_name: formData.restaurantName,
-                contact_number: formData.contactNumber,
-                gst_no: formData.gstIN,
-                fssai_code: formData.fssaiCode,
-                location: formData.location,
-                city: formData.city,
-            };
+                // Prepare restaurant data
+                const restaurantData = {
+                    user: [userResponse.data.user_id],
+                    restaurant_name: formData.restaurantName,
+                    contact_number: formData.contactNumber,
+                    gst_no: formData.gstIN,
+                    fssai_code: formData.fssaiCode,
+                    location: formData.location,
+                    city: formData.city,
+                };
 
-            // Register the restaurant
-            const restaurantResponse = await axios.post(baseUrl + restaurantEndpoint, restaurantData, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
+                const restaurantResponse = await axios.post(baseUrl + restaurantEndpoint, restaurantData, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
 
-            setIsSubmitted(true);
-            navigate('/dashboard');
-        } catch (error) {
-            console.log("An error occurred:", error);
-            // Handle errors or setApiErrors if needed
+                setIsSubmitted(true);
+                navigate('/dashboard');
+            } catch (error) {
+                console.log("An error occurred:", error);
+            }
         }
     };
 
@@ -105,9 +173,7 @@ function RegisterRestaurant() {
                                 onChange={handleInputChange}
                                 placeholder='My Restaurant'
                             />
-                            {/* {apiErrors.business_name && (
-                                <p className="text-red-400 text-xs mt-1">{apiErrors.restaurantName[0] ? apiErrors.restaurantName[0] : ''}</p>
-                            )} */}
+                            {formErrors.restaurantName && <span className="error text-xs text-red-400">{formErrors.restaurantName}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-slate-700 text-sm font-medium" htmlFor="contactNumber">Contact Number</label>
@@ -120,6 +186,7 @@ function RegisterRestaurant() {
                                 onChange={handleInputChange}
                                 placeholder='1234567890'
                             />
+                            {formErrors.contactNumber && <span className="error text-xs text-red-400">{formErrors.contactNumber}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-slate-700 text-sm font-medium" htmlFor="gstIN">GST IN</label>
@@ -132,6 +199,7 @@ function RegisterRestaurant() {
                                 onChange={handleInputChange}
                                 placeholder='GSTIN123456'
                             />
+                            {formErrors.gstIN && <span className="error text-xs text-red-400">{formErrors.gstIN}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-slate-700 text-sm font-medium" htmlFor="fssaiCode">FSSAI Code</label>
@@ -144,6 +212,7 @@ function RegisterRestaurant() {
                                 onChange={handleInputChange}
                                 placeholder='FSSAI123456'
                             />
+                            {formErrors.fssaiCode && <span className="error text-xs text-red-400">{formErrors.fssaiCode}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-slate-700 text-sm font-medium" htmlFor="location">Location</label>
@@ -156,6 +225,7 @@ function RegisterRestaurant() {
                                 onChange={handleInputChange}
                                 placeholder='USA'
                             />
+                            {formErrors.location && <span className="error text-xs text-red-400">{formErrors.location}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-slate-700 text-sm font-medium" htmlFor="city">City</label>
@@ -168,6 +238,7 @@ function RegisterRestaurant() {
                                 onChange={handleInputChange}
                                 placeholder='New York'
                             />
+                            {formErrors.city && <span className="error text-xs text-red-400">{formErrors.city}</span>}
                         </div>
                         <div className="flex justify-center mt-5">
                             <button className="py-2 px-4 rounded-md bg-black text-white text-sm">

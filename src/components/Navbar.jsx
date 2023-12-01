@@ -3,6 +3,8 @@ import { MdPersonOutline, MdNotificationsNone } from "react-icons/md";
 import { FaCircleUser } from "react-icons/fa6";
 import { GrUserSettings, GrSettingsOption } from "react-icons/gr";
 import { IoLogInOutline } from "react-icons/io5";
+import { MdOutlineEventAvailable } from "react-icons/md";
+import { IoRestaurantSharp } from "react-icons/io5";
 import { useMediaQuery } from "react-responsive";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -80,19 +82,15 @@ const Navbar = () => {
                         <MdPersonOutline className="cursor-pointer" size={25} onClick={toggleUserProfile} />
                         {showUserProfile && (
                             <div className="absolute top-12 right-0 w-32 bg-slate-100 shadow-lg rounded mr-1 cursor-pointer" ref={dropdownRef}>
-                                {/* <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
-                                    <GrUserSettings size={16} />
-                                    <span>Profile</span>
-                                </p> */}
                                 <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
                                     <Link to="/my-restaurant" className="flex items-center gap-2 text-black">
-                                        <GrSettingsOption size={16} />
+                                        <IoRestaurantSharp size={16} />
                                         <span className="text-black">My Restaurant</span>
                                     </Link>
                                 </p>
                                 <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
                                     <Link to="/my-events" className="flex items-center gap-2 text-black">
-                                        <GrSettingsOption size={16} />
+                                        <MdOutlineEventAvailable size={16} />
                                         <span className="text-black">My Events</span>
                                     </Link>
                                 </p>
@@ -115,19 +113,15 @@ const Navbar = () => {
                         <FaCircleUser size={23} onClick={toggleUserProfile} />
                         {showUserProfile && (
                             <div className="absolute top-12 right-0  bg-slate-100 shadow-lg rounded mr-1 cursor-pointer" ref={dropdownRef}>
-                                {/* <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
-                                    <GrUserSettings size={16} />
-                                    <span>Profile</span>
-                                </p> */}
                                 <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
                                     <Link to="/my-restaurant" className="flex items-center gap-2 text-black">
-                                        <GrSettingsOption size={16} />
+                                        <IoRestaurantSharp size={16} />
                                         <span>My Restaurant</span>
                                     </Link>
                                 </p>
                                 <p className="hover:bg-slate-200 p-2 flex items-center gap-2">
                                     <Link to="/my-events" className="flex items-center gap-2 text-black">
-                                        <GrSettingsOption size={16} />
+                                        <MdOutlineEventAvailable size={16} />
                                         <span>My Events</span>
                                     </Link>
                                 </p>

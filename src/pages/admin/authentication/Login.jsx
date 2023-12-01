@@ -8,49 +8,71 @@ function Login() {
         email_or_mobile_number: '',
         password: '',
     });
-    const [apiErrors, setApiErrors] = useState();
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [formErrors, setFormErrors] = useState({
+        email_or_mobile_number: '',
+        password: '',
+    });
+    const [inValidCredentials, setInvalidCredentials] = useState('');
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    const validateForm = () => {
+        let isValid = true;
+        const newFormErrors = { ...formErrors };
+
+        if (formData.email_or_mobile_number.trim() === '') {
+            newFormErrors.email_or_mobile_number = 'Please enter a mobile number.';
+            isValid = false;
+        } else {
+            newFormErrors.email_or_mobile_number = '';
+            isValid = true;
+        }
+
+        if (formData.password.trim() === '') {
+            newFormErrors.password = 'Please enter a password.';
+            isValid = false;
+        } else {
+            newFormErrors.password = '';
+            isValid = true;
+        }
+
+        setFormErrors(newFormErrors);
+        return isValid;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const userData = {
-            email_or_mobile_number: formData.email_or_mobile_number,
-            password: formData.password,
-        };
+        if (validateForm()) {
+            const userData = {
+                email_or_mobile_number: formData.email_or_mobile_number,
+                password: formData.password,
+            };
 
-        const baseUrl = import.meta.env.VITE_BASE_URL;
-        const loginEndpoint = '/api/user/login';
+            const baseUrl = import.meta.env.VITE_BASE_URL;
+            const loginEndpoint = '/api/user/login';
 
-        try {
-            const response = await axios.post(baseUrl + loginEndpoint, userData);
+            try {
+                const response = await axios.post(baseUrl + loginEndpoint, userData);
 
-            // Save the access token to local storage
-            localStorage.setItem('access_token', response.data.access_token);
+                localStorage.setItem('access_token', response.data.access_token);
 
-            // Check if the user is registered with a restaurant
-            const checkRegistrationResponse = await axios.get(baseUrl + '/api/user/has-restaurant', {
-                headers: {
-                    'Authorization': `Bearer ${response.data.access_token}`,
-                },
-            });
+                const checkRegistrationResponse = await axios.get(baseUrl + '/api/user/has-restaurant', {
+                    headers: {
+                        'Authorization': `Bearer ${response.data.access_token}`,
+                    },
+                });
 
-            // Navigate based on the registration status
-            if (checkRegistrationResponse.data.has_restaurant === true) {
-                navigate('/dashboard');
-            } else {
-                navigate('/register-restauarant');
-            }
-        } catch (error) {
-            if (error.response && error.response.data) {
-                console.log(error.response.data);
-            } else {
-                console.log("An error occurred:", error);
+                if (checkRegistrationResponse.data.has_restaurant === true) {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/register-restauarant');
+                }
+            } catch (error) {
+                setInvalidCredentials(error.response.data.error);
             }
         }
     };
@@ -73,6 +95,7 @@ function Login() {
                                 value={formData.email_or_mobile_number}
                                 onChange={handleInputChange}
                             />
+                            {formErrors.email_or_mobile_number && <span className="error text-xs text-red-400">{formErrors.email_or_mobile_number}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="password">Password</label>
@@ -84,10 +107,9 @@ function Login() {
                                 value={formData.password}
                                 onChange={handleInputChange}
                             />
+                            {formErrors.password && <span className="error text-xs text-red-400">{formErrors.password}</span>}
                         </div>
-                        {apiErrors && (
-                            <p className="text-red-400 text-xs mt-1">{apiErrors ? apiErrors : ''}</p>
-                        )}
+                        {inValidCredentials && <p className='error text-xs text-red-400'>{inValidCredentials}</p>}
                         <div className="flex justify-center mt-4">
                             <button className="py-2 px-4 rounded-md bg-myColor3 hover:bg-myColor2b text-white text-sm">
                                 Login

@@ -70,12 +70,11 @@ function Menu({ gstNo, menuId }) {
             .then(response => {
                 const responseData = response.data || [];
                 setRestaurantDetails(responseData);
-                console.log(responseData);
             })
             .catch(error => {
                 console.log(error);
             });
-    }
+    };
 
     const getTimings = async () => {
         const baseUrl = import.meta.env.VITE_BASE_URL;

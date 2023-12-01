@@ -3,44 +3,64 @@ import axios from 'axios';
 
 function AddSubCategoryModal({ closeModal, onAddSuccess, selectedSubCategoryId }) {
     const [subCategoryName, setSubCategoryName] = useState('');
+    const [formErrors, setFormErrors] = useState({
+        subCategoryName: ''
+    });
+
+    const validateForm = () => {
+        let isValid = true;
+        const newFormErrors = { ...formErrors };
+
+        if (subCategoryName.trim() === '') {
+            newFormErrors.subCategoryName = 'Please enter a category name.';
+            isValid = false;
+        } else {
+            newFormErrors.subCategoryName = '';
+        }
+
+        setFormErrors(newFormErrors);
+        return isValid;
+    };
 
     const handleAddSubCategory = async (e) => {
         e.preventDefault();
-        try {
-            const baseUrl = import.meta.env.VITE_BASE_URL;
-            const userRestroEndpoint = `/api/user/has-restaurant`;
-            const addSubCategoryEndpoint = `/api/categories/`;
-            const token = localStorage.getItem('access_token');
+        if (validateForm()) {
+            try {
+                const baseUrl = import.meta.env.VITE_BASE_URL;
+                const userRestroEndpoint = `/api/user/has-restaurant`;
+                const addSubCategoryEndpoint = `/api/categories/`;
+                const token = localStorage.getItem('access_token');
 
-            if (token) {
-                const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                if (token) {
+                    const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                const restaurantId = responseUser.data.restaurant_details.id;
+                    const restaurantId = responseUser.data.restaurant_details.id;
 
-                const subCategoryData = {
-                    restaurant: restaurantId,
-                    name: subCategoryName,
-                    parent_category: selectedSubCategoryId,
-                };
+                    const subCategoryData = {
+                        restaurant: restaurantId,
+                        name: subCategoryName,
+                        parent_category: selectedSubCategoryId,
+                    };
 
-                const responseAddSubCategory = await axios.post(baseUrl + addSubCategoryEndpoint, subCategoryData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                    const responseAddSubCategory = await axios.post(baseUrl + addSubCategoryEndpoint, subCategoryData, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                if (responseAddSubCategory) {
-                    closeModal();
-                    setSubCategoryName('');
-                    onAddSuccess()
+                    if (responseAddSubCategory) {
+                        closeModal();
+                        setSubCategoryName('');
+                        onAddSuccess()
+                    }
                 }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
     };
 
@@ -60,6 +80,7 @@ function AddSubCategoryModal({ closeModal, onAddSuccess, selectedSubCategoryId }
                         value={subCategoryName}
                         onChange={(e) => setSubCategoryName(e.target.value)}
                     />
+                    {formErrors.subCategoryName && <span className="error text-xs text-red-400">{formErrors.subCategoryName}</span>}
                 </div>
                 <div className="flex items-center justify-center gap-3">
                     <button

@@ -5,45 +5,73 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
     const [categoryName, setCategoryName] = useState('');
     const [categoryDescription, setCategoryDescription] = useState('');
     const [categoryId, setCategoryId] = useState();
+    const [formErrors, setFormErrors] = useState({
+        categoryName: '',
+        categoryDescription: ''
+    });
+
+    const validateForm = () => {
+        let isValid = true;
+        const newFormErrors = { ...formErrors };
+
+        if (categoryName.trim() === '') {
+            newFormErrors.categoryName = 'Please enter a category name.';
+            isValid = false;
+        } else {
+            newFormErrors.categoryName = '';
+        }
+
+        if (categoryDescription.trim() === '') {
+            newFormErrors.categoryDescription = 'Please enter a category description.';
+            isValid = false;
+        } else {
+            newFormErrors.categoryDescription = '';
+        }
+
+        setFormErrors(newFormErrors);
+        return isValid;
+    };
 
     const handleAddCategory = async (e) => {
         e.preventDefault();
-        try {
-            const baseUrl = import.meta.env.VITE_BASE_URL;
-            const userRestroEndpoint = `/api/user/has-restaurant`;
-            const addCategoryEndpoint = `/api/categories/`;
-            const token = localStorage.getItem('access_token');
+        if (validateForm()) {
+            try {
+                const baseUrl = import.meta.env.VITE_BASE_URL;
+                const userRestroEndpoint = `/api/user/has-restaurant`;
+                const addCategoryEndpoint = `/api/categories/`;
+                const token = localStorage.getItem('access_token');
 
-            if (token) {
-                const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                if (token) {
+                    const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                const restaurantId = responseUser.data.restaurant_details.id;
+                    const restaurantId = responseUser.data.restaurant_details.id;
 
-                const categoryData = {
-                    restaurant: restaurantId,
-                    name: categoryName,
-                    description: categoryDescription,
-                    parent_category: null,
-                };
+                    const categoryData = {
+                        restaurant: restaurantId,
+                        name: categoryName,
+                        description: categoryDescription,
+                        parent_category: null,
+                    };
 
-                const responseAddCategory = await axios.post(baseUrl + addCategoryEndpoint, categoryData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                    const responseAddCategory = await axios.post(baseUrl + addCategoryEndpoint, categoryData, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                if (responseAddCategory) {
-                    closeModal();
-                    setCategoryId(responseAddCategory.data.id);
-                    onAddSuccess();
+                    if (responseAddCategory) {
+                        closeModal();
+                        setCategoryId(responseAddCategory.data.id);
+                        onAddSuccess();
+                    }
                 }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
     };
 
@@ -63,6 +91,7 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
                         value={categoryName}
                         onChange={(e) => setCategoryName(e.target.value)}
                     />
+                    {formErrors.categoryName && <span className="error text-xs text-red-400">{formErrors.categoryName}</span>}
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="categoryDescription">
@@ -75,6 +104,7 @@ function AddCategoryModal({ closeModal, onAddSuccess }) {
                         value={categoryDescription}
                         onChange={(e) => setCategoryDescription(e.target.value)}
                     />
+                    {formErrors.categoryDescription && <span className="error text-xs text-red-400">{formErrors.categoryDescription}</span>}
                 </div>
                 <div className="flex items-center justify-center gap-3">
                     <button

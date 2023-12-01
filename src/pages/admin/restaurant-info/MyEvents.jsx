@@ -21,6 +21,7 @@ const convertTo12HourFormat = (time) => {
 function MyEvents() {
     const [restaurantId, setRestaurantId] = useState();
     const [upcomingEvents, setUpcomingEvents] = useState([]);
+    const [refresh, setRefresh] = useState(false);
     const [eventData, setEventData] = useState({
         eventName: '',
         eventStartDate: new Date().toISOString().split('T')[0],
@@ -72,6 +73,7 @@ function MyEvents() {
                 .then(response => {
                     const responseData = response.data || {};
                     setUpcomingEvents(responseData);
+                    setRefresh(!refresh);
                 })
                 .catch(error => {
 
@@ -120,6 +122,10 @@ function MyEvents() {
     useEffect(() => {
         getRestaurantDetail()
     }, []);
+
+    useEffect(() => {
+        getRestaurantDetail()
+    }, [refresh]);
 
     return (
 

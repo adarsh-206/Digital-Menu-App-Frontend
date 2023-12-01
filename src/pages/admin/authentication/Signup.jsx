@@ -9,39 +9,94 @@ function Signup() {
         email: '',
         password: '',
     });
-    const [errors, setErrors] = useState({});
-    const [apiErrors, setApiErrors] = useState({});
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [formErrors, setFormErrors] = useState({
+        mobileNumber: '',
+        email: '',
+        password: '',
+    });
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: '' });
     };
 
+    const validateForm = () => {
+        let isValid = true;
+        const newFormErrors = { ...formErrors };
+
+        if (formData.mobileNumber.trim() === '') {
+            newFormErrors.mobileNumber = 'Please enter a mobile number.';
+            isValid = false;
+        } else {
+            const mobileNumberRegex = /^\d{10}$/;
+            if (!mobileNumberRegex.test(formData.mobileNumber)) {
+                newFormErrors.mobileNumber = 'Please enter a valid 10 digit mobile number.';
+                isValid = false;
+            } else {
+                newFormErrors.mobileNumber = '';
+            }
+        }
+
+        if (formData.email.trim() !== '') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                newFormErrors.email = 'Please enter a valid email address.';
+                isValid = false;
+            } else {
+                newFormErrors.email = '';
+            }
+        }
+
+        if (formData.password.trim() === '' || formData.password.length < 6) {
+            newFormErrors.password = 'Please enter a password.';
+            isValid = false;
+        } else {
+            const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{6,})/;
+            if (!passwordRegex.test(formData.password)) {
+                newFormErrors.password = 'Please enter a valid password.';
+                isValid = false;
+            } else {
+                newFormErrors.password = '';
+            }
+        }
+
+        setFormErrors(newFormErrors);
+        return isValid;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const userData = {
-            mobile_number: formData.mobileNumber,
-            email: formData.email.trim() === "" ? null : formData.email,
-            password: formData.password,
-        };
+        if (validateForm()) {
+            const userData = {
+                mobile_number: formData.mobileNumber,
+                email: formData.email.trim() === "" ? null : formData.email,
+                password: formData.password,
+            };
 
-        const baseUrl = import.meta.env.VITE_BASE_URL;
-        const endpoint = '/api/user/register';
+            const baseUrl = import.meta.env.VITE_BASE_URL;
+            const endpoint = '/api/user/register';
 
-        axios.post(baseUrl + endpoint, userData)
-            .then((response) => {
+            axios.post(baseUrl + endpoint, userData)
+                .then((response) => {
+                    localStorage.setItem('access_token', response.data.access_token)
+                    navigate('/register-restauarant');
+                })
+                .catch((error) => {
+                    if (error.response.data.mobile_number && error.response.data.mobile_number.length) {
+                        setFormErrors({
+                            mobileNumber: 'Mobile Number is already in use.'
+                        });
+                    }
 
-                localStorage.setItem('access_token', response.data.access_token)
-                setIsSubmitted(true);
-                navigate('/register-restauarant');
-            })
-            .catch((error) => {
-                setApiErrors(error.response.data)
-            });
+                    if (error.response.data.email && error.response.data.email.length) {
+                        setFormErrors({
+                            email: 'Email Address is already in use.'
+                        });
+                    }
+
+                });
+        }
     };
 
     return (
@@ -62,9 +117,7 @@ function Signup() {
                                 value={formData.mobileNumber}
                                 onChange={handleInputChange}
                             />
-                            {apiErrors.mobile_number && (
-                                <p className="text-red-400 text-xs mt-1">{apiErrors.mobile_number[0] ? apiErrors.mobile_number : ''}</p>
-                            )}
+                            {formErrors.mobileNumber && <span className="error text-xs text-red-400">{formErrors.mobileNumber}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="email">Email Address (Optional)</label>
@@ -76,9 +129,7 @@ function Signup() {
                                 value={formData.email}
                                 onChange={handleInputChange}
                             />
-                            {apiErrors.email && (
-                                <p className="text-red-400 text-xs mt-1">{apiErrors.email[0] ? apiErrors.email[0] : ''}</p>
-                            )}
+                            {formErrors.email && <span className="error text-xs text-red-400">{formErrors.email}</span>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-white text-sm font-medium" htmlFor="password">Password</label>
@@ -90,9 +141,7 @@ function Signup() {
                                 value={formData.password}
                                 onChange={handleInputChange}
                             />
-                            {apiErrors.password && (
-                                <p className="text-red-400 text-xs mt-1">{apiErrors.password[0] ? apiErrors.password[0] : ''}</p>
-                            )}
+                            {formErrors.password && <span className="error text-xs text-red-400">Password must be at least 6 characters with one uppercase letter and a special symbol.</span>}
                         </div>
                         <div className="flex justify-center mt-3">
                             <button className="py-2 px-4 rounded-md bg-myColor3 hover:bg-myColor2b text-white text-sm">
