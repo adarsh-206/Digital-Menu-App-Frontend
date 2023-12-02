@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
     "@heroicons/react": "v1",
     "@mui/material": "^5.14.19",
+    "@mui/styled-engine": "^5.14.19",
     "axios": "^1.6.0",
     "flowbite-react": "^0.6.4",
     "framer-motion": "^10.16.4",
