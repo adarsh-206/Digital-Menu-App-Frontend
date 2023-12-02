@@ -15,6 +15,7 @@ const UserCards = ({ menu, description }) => {
         setIsExpanded(!isExpanded);
     };
 
+
     return (
         <>
             <p className='text-xs py-1'>{description}</p>
