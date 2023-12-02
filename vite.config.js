@@ -7,4 +7,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@mui/material'],
   },
+  base: '/Digital-Menu-App-Frontend/',
 })
