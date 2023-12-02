@@ -1,53 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FadeLoader } from 'react-spinners';
 
 function AddMenuModal({ closeModal, onAddSuccess }) {
     const [menuName, setMenuName] = useState('');
     const [menuDescription, setMenuDescription] = useState('');
     const [loading, setLoading] = useState(false)
+    const [formErrors, setFormErrors] = useState({
+        menuName: '',
+        menuDescription: ''
+    });
 
+    const validateForm = () => {
+        let isValid = true;
+        const newFormErrors = { ...formErrors };
+
+        if (menuName.trim() === '') {
+            newFormErrors.menuName = 'Please enter a menu name.';
+            isValid = false;
+        } else {
+            newFormErrors.menuName = '';
+        }
+
+        if (menuDescription.trim() === '') {
+            newFormErrors.menuDescription = 'Please enter a menu description.';
+            isValid = false;
+        } else {
+            newFormErrors.menuDescription = '';
+        }
+
+        setFormErrors(newFormErrors);
+        return isValid;
+    };
 
     const handleAddMenu = async (e) => {
         e.preventDefault();
-        setLoading(true)
-        try {
-            const baseUrl = import.meta.env.VITE_BASE_URL;
-            const userRestroEndpoint = `/api/user/has-restaurant`;
-            const addMenuEndpoint = `/api/menus/`;
-            const token = localStorage.getItem('access_token');
+        if (validateForm()) {
+            try {
+                const baseUrl = import.meta.env.VITE_BASE_URL;
+                const userRestroEndpoint = `/api/user/has-restaurant`;
+                const addMenuEndpoint = `/api/menus/`;
+                const token = localStorage.getItem('access_token');
 
-            if (token) {
-                const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                if (token) {
+                    const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                const restaurantId = responseUser.data.restaurant_details.id;
+                    const restaurantId = responseUser.data.restaurant_details.id;
 
-                const menuData = {
-                    restaurant: restaurantId,
-                    name: menuName,
-                    menu_description: menuDescription,
-                };
+                    const menuData = {
+                        restaurant: restaurantId,
+                        name: menuName,
+                        menu_description: menuDescription,
+                    };
 
-                const responseAddMenu = await axios.post(baseUrl + addMenuEndpoint, menuData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                    const responseAddMenu = await axios.post(baseUrl + addMenuEndpoint, menuData, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                if (responseAddMenu) {
-                    setLoading(false)
-                    closeModal();
-                    setMenuName('');
-                    setMenuDescription('');
-                    onAddSuccess()
+                    if (responseAddMenu) {
+                        closeModal();
+                        setMenuName('');
+                        setMenuDescription('');
+                        onAddSuccess()
+                    }
                 }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
     };
 
@@ -67,6 +91,7 @@ function AddMenuModal({ closeModal, onAddSuccess }) {
                         value={menuName}
                         onChange={(e) => setMenuName(e.target.value)}
                     />
+                    {formErrors.menuName && <span className="error text-xs text-red-400">{formErrors.menuName}</span>}
                 </div>
                 <div className="mb-6">
                     <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="menuDescription">
@@ -80,6 +105,7 @@ function AddMenuModal({ closeModal, onAddSuccess }) {
                         value={menuDescription}
                         onChange={(e) => setMenuDescription(e.target.value)}
                     />
+                    {formErrors.menuDescription && <span className="error text-xs text-red-400">{formErrors.menuDescription}</span>}
                 </div>
                 <div className="flex items-center justify-center gap-3">
                     <button

@@ -177,7 +177,7 @@ function ItemCard({ category, onAddSuccess, refresh, setRefresh }) {
                                     <div key={index}>
                                         {subCategory.name &&
                                             <div className='flex items-center'>
-                                                <p className='px-4 text-xl font-bold'>{subCategory.name}</p>
+                                                <p className='p-4 text-xl font-bold'>{subCategory.name}</p>
                                                 <button onClick={() => openDishModal(subCategory.parent_category)} className="bg-yellow-200 hover:bg-yellow-300 text-black text-xs py-1 px-2 rounded-lg">
                                                     Add Dish +
                                                 </button>
