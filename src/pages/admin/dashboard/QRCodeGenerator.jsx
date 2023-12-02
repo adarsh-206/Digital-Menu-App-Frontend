@@ -24,43 +24,52 @@ function QRCodeGenerator({
 }) {
     const qrCodeRef = useRef(null);
     const [selectedFormat, setSelectedFormat] = useState('png');
-    const [isSaved, setIsSaved] = useState(false);
 
     const handleFormatChange = (event) => {
         setSelectedFormat(event.target.value);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const matchResult = url.match(/\/menu\/([^\/]+)\/(\d+)/);
         if (matchResult) {
             const gstNo = matchResult[1];
             const menuId = matchResult[2];
 
             const baseUrl = import.meta.env.VITE_BASE_URL;
-            const saveQREndpoint = `/api/save-qr-code/${gstNo}/${menuId}/`;
+            const userRestroEndpoint = `/api/user/has-restaurant`;
+            const saveQREndpoint = `/api/restaurants/save-qr-code/${gstNo}/`;
             const token = localStorage.getItem('access_token');
+
+
+            const responseUser = await axios.get(baseUrl + userRestroEndpoint, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
 
             if (qrCodeRef.current && qrCodeRef.current.qrCodeInstance) {
                 const qrCodeInstance = qrCodeRef.current.qrCodeInstance;
 
-                // Get the canvas element from the QRCodeStyling instance
                 const canvas = qrCodeInstance._canvas;
 
-                // Check if the canvas is available
                 if (canvas) {
-                    // Generate a data URL for the QR code
                     const dataUrl = canvas.toDataURL(`image/${selectedFormat}`);
 
-                    // Make API call to save QR code to the backend
+                    const qrdata = {
+                        restaurant: responseUser.data.restaurant_details.id,
+                        qr_code_url: url,
+                        qr_code_data: dataUrl
+                    }
+
                     if (matchResult) {
                         axios
-                            .post(baseUrl + saveQREndpoint, { qrCodeData: dataUrl }, {
+                            .post(baseUrl + saveQREndpoint, qrdata, {
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             })
                             .then((response) => {
-                                setIsSaved(true);
+
                             })
                             .catch((error) => {
                                 console.error('Error saving QR code:', error);
@@ -90,6 +99,7 @@ function QRCodeGenerator({
 
                 // Trigger a click on the anchor element to start the download
                 anchor.click();
+                handleSave();
             }
         }
     };
@@ -189,33 +199,23 @@ function QRCodeGenerator({
         <div className="flex flex-col items-center">
             <div className="text-center" ref={qrCodeRef}></div>
             <div className="flex items-center justify-center mt-4 text-sm">
-                {!isSaved && (
-                    <button
-                        className="bg-[#940B92] text-white py-1 px-3 rounded-md mr-2"
-                        onClick={handleSave}
+                <>
+                    <select
+                        value={selectedFormat}
+                        onChange={handleFormatChange}
+                        className="border border-gray-300 p-0.5 mx-2"
                     >
-                        Save QR
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="webp">WEBP</option>
+                    </select>
+                    <button
+                        className="bg-[#940B92] text-white py-1 px-3 rounded-md"
+                        onClick={downloadQRCode}
+                    >
+                        Download QR
                     </button>
-                )}
-                {isSaved && (
-                    <>
-                        <select
-                            value={selectedFormat}
-                            onChange={handleFormatChange}
-                            className="border border-gray-300 p-0.5 mx-2"
-                        >
-                            <option value="png">PNG</option>
-                            <option value="jpeg">JPEG</option>
-                            <option value="webp">WEBP</option>
-                        </select>
-                        <button
-                            className="bg-[#940B92] text-white py-1 px-3 rounded-md"
-                            onClick={downloadQRCode}
-                        >
-                            Download QR
-                        </button>
-                    </>
-                )}
+                </>
             </div>
         </div>
     );

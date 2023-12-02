@@ -11,23 +11,14 @@ import Modal from '../../../components/modals/FormModal';
 
 function MyMenu() {
     const [isMenuModalOpen, setMenuModalOpen] = useState(false);
-    const [launchStatus, setLaunchStatus] = useState("Not Launched");
     const [menus, setMenus] = useState({});
     const [menuName, setMenuName] = useState('');
     const [refresh, setRefresh] = useState(false)
 
-    const toggleRocketLaunch = () => {
-        if (launchStatus === "Not Launched") {
-            setLaunchStatus("Launched");
-        } else {
-            setLaunchStatus("Not Launched");
-        }
-    };
-
     const getMenus = () => {
         const baseUrl = import.meta.env.VITE_BASE_URL;
         const menuListEndpoint = '/api/menus';
-        const token = localStorage.getItem('access_token')
+        const token = localStorage.getItem('access_token');
 
         if (token) {
             axios.get(baseUrl + menuListEndpoint, {
@@ -130,7 +121,7 @@ function MyMenu() {
                     menus.map((menu, index) => (
                         <div key={index} className='flex justify-between bg-white p-4 rounded-lg'>
                             <div className='flex items-center text-black gap-1'><ContentEditable html={menuName} className='cursor-pointer' onChange={(e) => updateMenuName(menu, e.target.value)} /><CiEdit size={14} color='black' /></div>
-                            <Link to="/my-menu" className="flex flex-row items-center gap-1">
+                            <Link to="/my-menu" className="flex flex-row items-center gap-1 cursor-default">
                                 <MdOutlineRocketLaunch size={18} color={menu.launch_status === true ? "red" : "black"} />
                                 <p className="text-xs" style={{ color: menu.launch_status === true ? "red" : "black" }}>
                                     {menu.launch_status === true ? "Launched" : "Not Launched"}

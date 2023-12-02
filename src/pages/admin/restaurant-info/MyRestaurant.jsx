@@ -41,6 +41,7 @@ function MyRestaurant() {
                     if (responseData.has_restaurant) {
                         setRestaurantDetails(responseData.restaurant_details);
                         setRestaurantId(responseData.restaurant_details.id);
+                        getTimings(responseData.restaurant_details.gst_no);
                         setFormData({
                             restaurantName: responseData.restaurant_details.restaurant_name,
                             contactNumber: responseData.restaurant_details.contact_number,
@@ -163,9 +164,9 @@ function MyRestaurant() {
         }
     };
 
-    const getTimings = async () => {
+    const getTimings = async (gstNo) => {
         const baseUrl = import.meta.env.VITE_BASE_URL;
-        const createEventEndpoint = `/api/restaurants/opening-hours/`;
+        const createEventEndpoint = `/api/restaurants/opening-hours/${gstNo}`;
         const token = localStorage.getItem('access_token');
 
         if (token) {
@@ -175,8 +176,9 @@ function MyRestaurant() {
                 },
             })
                 .then(response => {
-                    const responseData = response.data || {}
+                    const responseData = response.data[0] || {}
                     const formatTime = (time) => time ? time.slice(0, 5) : '';
+                    console.log("formatTime", responseData);
                     setOpeningHours({
                         Monday: {
                             open: formatTime(responseData.monday_open),
@@ -216,7 +218,6 @@ function MyRestaurant() {
 
     useEffect(() => {
         getRestaurantDetail()
-        getTimings()
     }, []);
 
     return (
